@@ -572,9 +572,12 @@ export default function CORLYApp() {
               <div style={{fontSize:9,color:C.textMuted}}>株式会社CORLY · 岩崎 · 全チャネル営業</div>
             </div>
           </div>
-          <div style={{textAlign:"right"}}>
-            <div style={{fontSize:13,fontWeight:700,color:"#F0B429"}}>¥{monthlyProfit.toLocaleString()}</div>
-            <div style={{fontSize:8,color:C.textMuted}}>月利益</div>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <a href="./career.html" style={{fontSize:9,color:C.textMuted,border:`1px solid ${C.border}`,borderRadius:20,padding:"4px 9px",textDecoration:"none",whiteSpace:"nowrap"}}>🧭 Career OS</a>
+            <div style={{textAlign:"right"}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#F0B429"}}>¥{monthlyProfit.toLocaleString()}</div>
+              <div style={{fontSize:8,color:C.textMuted}}>月利益</div>
+            </div>
           </div>
         </div>
         {/* Online/Offline indicator */}
