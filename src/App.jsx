@@ -67,6 +67,14 @@ const DM_TEMPLATES = {
   email:     "件名：【ご提案】空気品質管理サービスのご案内\n\n拝啓\n\n平素より格別のご高配を賜り、厚く御礼申し上げます。\n株式会社CORLY 代表の岩崎と申します。\n\nこの度は貴施設の衛生管理・空気品質改善についてご提案の機会をいただきたく、ご連絡差し上げました。\n\n弊社が取り扱う「空気の王様」は抗菌・抗ウイルス性能を持つ空気清浄フィルターで、大阪市内の医療・介護・保育施設様に導入いただいております。\n\n月額定額制でリスクなくお試しいただけます。\n\n一度15分ほどお時間をいただけますでしょうか。\n\n敬具\n株式会社CORLY\n代表取締役 岩崎",
 };
 
+const DAILY_FIELDS = [
+  { key:"visits", label:"飛び込み訪問", icon:"🚶", color:"#F97316" },
+  { key:"calls",  label:"電話架電",     icon:"📞", color:"#10B981" },
+  { key:"emails", label:"メール送信",    icon:"✉️", color:"#6366F1" },
+  { key:"dms",    label:"DM送信",       icon:"💬", color:"#4ADE80" },
+  { key:"deals",  label:"成約",         icon:"🎉", color:"#F0B429" },
+];
+
 // ── MAP ───────────────────────────────────────────────────────
 function MapView({ targets, selected, onSelect }) {
   const minLat=34.694, maxLat=34.713, minLng=135.490, maxLng=135.516;
@@ -450,8 +458,136 @@ function FilterScreen({ targets }) {
   );
 }
 
+// ── DAILY REPORT ──────────────────────────────────────────────
+const LS_WEBHOOK = "corly_sheet_webhook";
+const LS_REPORTS = "corly_daily_reports";
+
+function DailyReportScreen() {
+  const todayStr = () => new Date().toISOString().slice(0,10);
+  const emptyCounts = () => Object.fromEntries(DAILY_FIELDS.map(f=>[f.key,0]));
+
+  const [date, setDate] = useState(todayStr());
+  const [counts, setCounts] = useState(emptyCounts());
+  const [memo, setMemo] = useState("");
+  const [next, setNext] = useState("");
+  const [webhook, setWebhook] = useState(()=>localStorage.getItem(LS_WEBHOOK)||"");
+  const [showSettings, setShowSettings] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [history, setHistory] = useState(()=>{
+    try { return JSON.parse(localStorage.getItem(LS_REPORTS)||"[]"); } catch { return []; }
+  });
+
+  const bump = (key, delta) => setCounts(p=>({...p,[key]:Math.max(0,(p[key]||0)+delta)}));
+
+  const saveWebhook = (url) => {
+    setWebhook(url);
+    localStorage.setItem(LS_WEBHOOK, url);
+  };
+
+  const submit = async () => {
+    setStatus("sending");
+    const report = { id:Date.now(), date, ...counts, memo, next, sentAt:new Date().toISOString(), synced:false };
+
+    if (webhook) {
+      try {
+        await fetch(webhook, {
+          method:"POST",
+          mode:"no-cors",
+          headers:{ "Content-Type":"text/plain;charset=utf-8" },
+          body: JSON.stringify(report),
+        });
+        report.synced = true;
+        setStatus("sent");
+      } catch {
+        setStatus("error");
+      }
+    } else {
+      setStatus("saved");
+    }
+
+    const nextHistory = [report, ...history].slice(0,50);
+    setHistory(nextHistory);
+    localStorage.setItem(LS_REPORTS, JSON.stringify(nextHistory));
+
+    setCounts(emptyCounts());
+    setMemo(""); setNext("");
+    setTimeout(()=>setStatus(null), 2500);
+  };
+
+  const statusLabel = {
+    sending:"送信中…",
+    sent:"✓ スプレッドシートに追記しました",
+    error:"✕ 送信失敗（端末には保存済み）",
+    saved:"✓ 端末に保存しました（未接続）",
+  }[status] || "📤 日報を記録する";
+
+  return (
+    <div style={{padding:"14px 14px 100px"}}>
+      <SectionTitle color="#F0B429">📝 日報</SectionTitle>
+
+      <button onClick={()=>setShowSettings(s=>!s)} style={{fontSize:10,color:webhook?"#10B981":"#F97316",background:webhook?"rgba(16,185,129,0.1)":"rgba(249,115,22,0.1)",border:`1px solid ${webhook?"#10B981":"#F97316"}40`,borderRadius:20,padding:"5px 11px",cursor:"pointer",marginBottom:12}}>
+        {webhook ? "🔗 スプレッドシート連携：接続済み" : "⚠️ スプレッドシート未接続（タップして設定）"}
+      </button>
+
+      {showSettings && (
+        <div style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.08)",borderRadius:11,padding:"12px 13px",marginBottom:14}}>
+          <Label>Google Apps Script Webアプリ URL</Label>
+          <input defaultValue={webhook} onBlur={e=>saveWebhook(e.target.value.trim())} placeholder="https://script.google.com/macros/s/xxxx/exec" style={inputStyle}/>
+          <div style={{fontSize:10,color:C.textMuted,marginTop:8,lineHeight:1.6}}>
+            スプレッドシート側にApps Scriptを設置してウェブアプリとして公開すると、入力した日報が自動でシートに追記されます。設定方法は docs/daily-report-sheet-sync.md を参照してください。URLはこの端末のブラウザ内にのみ保存されます。
+          </div>
+        </div>
+      )}
+
+      <Label>日付</Label>
+      <input type="date" value={date} onChange={e=>setDate(e.target.value)} style={{...inputStyle,marginBottom:14}}/>
+
+      <Label>今日の活動件数</Label>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+        {DAILY_FIELDS.map(f=>(
+          <div key={f.key} style={{background:`${f.color}0a`,border:`1px solid ${f.color}25`,borderRadius:11,padding:"10px 12px"}}>
+            <div style={{fontSize:10,color:f.color,marginBottom:6}}>{f.icon} {f.label}</div>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <button onClick={()=>bump(f.key,-1)} style={stepperBtnStyle}>−</button>
+              <span style={{flex:1,textAlign:"center",fontSize:16,fontWeight:700}}>{counts[f.key]}</span>
+              <button onClick={()=>bump(f.key,1)} style={stepperBtnStyle}>＋</button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <TextArea label="今日の所感・メモ" value={memo} onChange={setMemo} rows={3} placeholder="院長と15分話せた。来週金曜に返答もらえる予定" />
+      <TextArea label="明日のアクション" value={next} onChange={setNext} rows={2} placeholder="さくら歯科に確認の電話、グランツ歯科にアポ取り" />
+
+      <ActionBtn color={status==="error"?"#EF4444":"#F0B429"} onClick={submit}>{statusLabel}</ActionBtn>
+
+      {history.length>0 && (
+        <div style={{marginTop:24}}>
+          <div style={{fontSize:10,color:C.textMuted,fontWeight:700,letterSpacing:"0.1em",marginBottom:10}}>📚 直近の日報</div>
+          {history.map(h=>(
+            <div key={h.id} style={{background:"rgba(255,255,255,0.03)",border:"1px solid rgba(255,255,255,0.07)",borderRadius:11,padding:"11px 13px",marginBottom:8}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}}>
+                <span style={{fontSize:12,fontWeight:700}}>{h.date}</span>
+                <span style={{fontSize:9,color:h.synced?"#10B981":"#F97316"}}>{h.synced?"✓ シート送信済み":"未接続で保存"}</span>
+              </div>
+              <div style={{display:"flex",gap:9,flexWrap:"wrap",marginBottom:6}}>
+                {DAILY_FIELDS.filter(f=>h[f.key]>0).map(f=>(
+                  <span key={f.key} style={{fontSize:9,color:f.color}}>{f.icon} {h[f.key]}</span>
+                ))}
+              </div>
+              {h.memo && <div style={{fontSize:10,color:C.textDim}}>💬 {h.memo}</div>}
+              {h.next && <div style={{fontSize:10,color:C.textMuted,marginTop:3}}>➡ {h.next}</div>}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── SHARED PRIMITIVES ─────────────────────────────────────────
 const inputStyle = { width:"100%", padding:"9px 12px", borderRadius:9, background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", color:"#F0EEE8", fontSize:13, outline:"none" };
+const stepperBtnStyle = { width:26, height:26, borderRadius:7, background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"#F0EEE8", fontSize:14, lineHeight:1, cursor:"pointer" };
 function Label({children}){ return <div style={{fontSize:9,color:"rgba(240,238,232,0.4)",letterSpacing:"0.1em",marginBottom:6,textTransform:"uppercase"}}>{children}</div>; }
 function TextInput({label,value,onChange,placeholder}){ return <div style={{marginBottom:12}}>{label&&<Label>{label}</Label>}<input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={inputStyle}/></div>; }
 function TextArea({label,value,onChange,rows=3,placeholder}){ return <div style={{marginBottom:12}}>{label&&<Label>{label}</Label>}<textarea value={value} onChange={e=>onChange(e.target.value)} rows={rows} placeholder={placeholder} style={{...inputStyle,resize:"none",lineHeight:1.6}}/></div>; }
@@ -557,6 +693,7 @@ export default function CORLYApp() {
     {id:"talk",    icon:"💬",  label:"トーク"},
     {id:"kpi",     icon:"👑",  label:"KPI"},
     {id:"filter",  icon:"🌬️", label:"台帳"},
+    {id:"daily",   icon:"📝",  label:"日報"},
   ];
 
   return (
@@ -652,6 +789,7 @@ export default function CORLYApp() {
         {screen==="talk"     && <div style={{flex:1,overflowY:"auto"}}><TalkScreen/></div>}
         {screen==="kpi"      && <div style={{flex:1,overflowY:"auto"}}><KPIScreen targets={targets}/></div>}
         {screen==="filter"   && <div style={{flex:1,overflowY:"auto"}}><FilterScreen targets={targets}/></div>}
+        {screen==="daily"    && <div style={{flex:1,overflowY:"auto"}}><DailyReportScreen/></div>}
       </div>
 
       {/* BOTTOM NAV */}
