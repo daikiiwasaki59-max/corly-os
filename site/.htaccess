@@ -1,0 +1,63 @@
+# ---- 株式会社CORLY corly.co.jp ----
+# Xserver（Apache）向け。静的サイト + contact.php のみ。
+
+# HTTPS強制（Xserverの無料SSLを有効化してから使う）
+RewriteEngine On
+RewriteCond %{HTTPS} !=on
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# www なし に統一
+RewriteCond %{HTTP_HOST} ^www\.corly\.co\.jp$ [NC]
+RewriteRule ^(.*)$ https://corly.co.jp/$1 [R=301,L]
+
+# 旧WordPress URL → 新サイトの該当セクションへ
+RedirectMatch 301 ^/company/?$        /#company
+RedirectMatch 301 ^/service/?$        /#services
+RedirectMatch 301 ^/cleaning/?$       /#services
+RedirectMatch 301 ^/project/?$        /#services
+RedirectMatch 301 ^/jis/?$            /#why
+RedirectMatch 301 ^/kuuki-osama/?$    /#services
+RedirectMatch 301 ^/case-studies/?$   /#results
+RedirectMatch 301 ^/contact/?$        /#contact
+RedirectMatch 301 ^/privacy-policy/?$ /privacy.html
+
+# 改ざんで作られた不正URLはインデックス削除のため 410 Gone を返す
+RedirectMatch 410 ^/(quality|original)/.*$
+RedirectMatch 410 ^/wp-(admin|login|content|includes).*$
+RedirectMatch 410 ^/xmlrpc\.php$
+
+# ディレクトリ一覧を禁止
+Options -Indexes
+
+# ドットファイル・バックアップ類へのアクセス禁止
+<FilesMatch "^(\.|.*\.(bak|old|orig|log|sql|env|ini|sh|md)$)">
+  Require all denied
+</FilesMatch>
+
+# contact.php 以外のPHP実行を禁止（不正アップロード対策）
+<FilesMatch "\.php$">
+  Require all denied
+</FilesMatch>
+<Files "contact.php">
+  Require all granted
+</Files>
+
+# セキュリティヘッダ
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
+  # HSTS は HTTPS が安定稼働してから有効化する
+  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# キャッシュ
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 7 days"
+  ExpiresByType application/javascript "access plus 7 days"
+  ExpiresByType image/svg+xml "access plus 30 days"
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>

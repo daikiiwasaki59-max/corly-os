@@ -1,0 +1,40 @@
+# corly.co.jp を Xserver へ FTPS でデプロイする（手動実行のみ）
+#
+# 事前に GitHub → Settings → Secrets and variables → Actions に登録:
+#   XSERVER_FTP_HOST      例: sv12345.xserver.jp
+#   XSERVER_FTP_USER      Xserver の FTPアカウント名（サブFTPアカウントを作って権限を絞る）
+#   XSERVER_FTP_PASSWORD  そのパスワード
+#   XSERVER_FTP_DIR       例: /corly.co.jp/public_html/   （末尾スラッシュ必須）
+#
+# 注意:
+# - パスワードをコード・Issue・チャットに書かない。Secrets にだけ置く。
+# - Xserver「FTP制限設定」でIP制限を有効にしていると GitHub のランナーから接続できない。
+#   その場合は一時的に解除するか、手動アップロードに切り替える。
+# - dangerous-clean-slate は使わない（サーバ側の他ファイルを消さない）。
+name: Deploy corly.co.jp to Xserver
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Upload site/ via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.XSERVER_FTP_HOST }}
+          username: ${{ secrets.XSERVER_FTP_USER }}
+          password: ${{ secrets.XSERVER_FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./site/
+          server-dir: ${{ secrets.XSERVER_FTP_DIR }}
+          exclude: |
+            **/.git*
+            **/.DS_Store
