@@ -1,5 +1,9 @@
 import fs from 'fs';
-const out = '/home/user/corly-os/site/';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const out = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'site') + '/';
+// 写真: site/assets/img/ph-<name>.jpg があればそれを、無ければグレーの仮枠 SVG を使う
+const img = (name) => fs.existsSync(out + 'assets/img/ph-' + name + '.jpg') ? 'ph-' + name + '.jpg' : 'ph-' + name + '.svg';
 const NAV = [
   ['index.html','トップ'],['vacant.html','空室清掃'],['regular.html','日常・定期清掃'],['store.html','店舗・飲食店清掃'],['company.html','会社概要'],['contact.html','お問い合わせ']
 ];
@@ -107,7 +111,7 @@ pages['index.html'] = head('株式会社CORLY｜大阪の清掃会社（空室�
         <a class="tel" href="tel:0642562693">お電話はこちら<b>06-4256-2693</b></a>
       </div>
     </div>
-    <div class="pic"><img src="assets/img/ph-hero.svg" alt="清掃作業の様子" width="1600" height="900"></div>
+    <div class="pic"><img src="assets/img/${img('hero')}" alt="清掃作業の様子" width="1600" height="900"></div>
   </div>
 </section>
 
@@ -115,9 +119,9 @@ pages['index.html'] = head('株式会社CORLY｜大阪の清掃会社（空室�
   <div class="wrap">
     <div class="sec-title fade"><span class="en">SERVICE</span><h2>清掃サービス</h2><p>住まい、オフィス、店舗。現場ごとに作業範囲と頻度を決めて、同じ品質で繰り返します。</p></div>
     <div class="cards fade">
-      <a class="card" href="vacant.html"><img src="assets/img/ph-vacant.svg" alt="空室清掃" width="1200" height="900"><div class="body"><h3>空室清掃</h3><p>退去後のアパート・マンションを、次の入居者を迎えられる状態に。管理会社様・オーナー様からのご依頼に対応します。</p><span class="more">詳しく見る</span></div></a>
-      <a class="card" href="regular.html"><img src="assets/img/ph-regular.svg" alt="日常・定期清掃" width="1200" height="900"><div class="body"><h3>日常・定期清掃</h3><p>オフィス、医療・介護施設、集合住宅の共用部。決めた頻度で、決めた品質を守り続けます。</p><span class="more">詳しく見る</span></div></a>
-      <a class="card" href="store.html"><img src="assets/img/ph-store.svg" alt="店舗・飲食店清掃" width="1200" height="900"><div class="body"><h3>店舗・飲食店清掃</h3><p>厨房のグリストラップ、換気まわり、客席の床とガラス。臭いと油のトラブルを防ぎます。</p><span class="more">詳しく見る</span></div></a>
+      <a class="card" href="vacant.html"><img src="assets/img/${img('vacant')}" alt="空室清掃" width="1200" height="900"><div class="body"><h3>空室清掃</h3><p>退去後のアパート・マンションを、次の入居者を迎えられる状態に。管理会社様・オーナー様からのご依頼に対応します。</p><span class="more">詳しく見る</span></div></a>
+      <a class="card" href="regular.html"><img src="assets/img/${img('regular')}" alt="日常・定期清掃" width="1200" height="900"><div class="body"><h3>日常・定期清掃</h3><p>オフィス、医療・介護施設、集合住宅の共用部。決めた頻度で、決めた品質を守り続けます。</p><span class="more">詳しく見る</span></div></a>
+      <a class="card" href="store.html"><img src="assets/img/${img('store')}" alt="店舗・飲食店清掃" width="1200" height="900"><div class="body"><h3>店舗・飲食店清掃</h3><p>厨房のグリストラップ、換気まわり、客席の床とガラス。臭いと油のトラブルを防ぎます。</p><span class="more">詳しく見る</span></div></a>
     </div>
   </div>
 </section>
@@ -136,7 +140,7 @@ pages['index.html'] = head('株式会社CORLY｜大阪の清掃会社（空室�
 <section class="section">
   <div class="wrap">
     <div class="feature fade">
-      <div class="pic"><img src="assets/img/ph-report.svg" alt="写真付き作業報告書" width="1200" height="900"></div>
+      <div class="pic"><img src="assets/img/${img('report')}" alt="写真付き作業報告書" width="1200" height="900"></div>
       <div>
         <div class="sec-title"><span class="en">REPORT</span><h2>作業は、写真で報告します</h2></div>
         <p>「きれいになったか」を口頭ではなく写真でお伝えします。作業前・作業後の写真と確認項目を1枚の報告書にまとめ、作業のたびに提出します。</p>
@@ -150,10 +154,10 @@ pages['index.html'] = head('株式会社CORLY｜大阪の清掃会社（空室�
   <div class="wrap">
     <div class="sec-title fade"><span class="en">WORKS</span><h2>施工写真</h2><p>実際の現場写真を順次掲載します。</p></div>
     <div class="gallery fade">
-      <figure><img src="assets/img/ph-work1.svg" alt="施工写真" width="1200" height="900"><figcaption>空室清掃（作業前）</figcaption></figure>
-      <figure><img src="assets/img/ph-work2.svg" alt="施工写真" width="1200" height="900"><figcaption>空室清掃（作業後）</figcaption></figure>
-      <figure><img src="assets/img/ph-work3.svg" alt="施工写真" width="1200" height="900"><figcaption>定期清掃（床洗浄）</figcaption></figure>
-      <figure><img src="assets/img/ph-work4.svg" alt="施工写真" width="1200" height="900"><figcaption>グリストラップ清掃</figcaption></figure>
+      <figure><img src="assets/img/${img('work1')}" alt="施工写真" width="1200" height="900"><figcaption>空室清掃（作業前）</figcaption></figure>
+      <figure><img src="assets/img/${img('work2')}" alt="施工写真" width="1200" height="900"><figcaption>空室清掃（作業後）</figcaption></figure>
+      <figure><img src="assets/img/${img('work3')}" alt="施工写真" width="1200" height="900"><figcaption>定期清掃（床洗浄）</figcaption></figure>
+      <figure><img src="assets/img/${img('work4')}" alt="施工写真" width="1200" height="900"><figcaption>グリストラップ清掃</figcaption></figure>
     </div>
   </div>
 </section>
@@ -228,7 +232,7 @@ pages['company.html'] = head('会社概要｜株式会社CORLY','株式会社COR
 <section class="section">
   <div class="wrap">
     <div class="feature fade">
-      <div class="pic"><img src="assets/img/ph-office.svg" alt="株式会社CORLY 事務所" width="1200" height="900"></div>
+      <div class="pic"><img src="assets/img/${img('office')}" alt="株式会社CORLY 事務所" width="1200" height="900"></div>
       <div>
         <div class="sec-title"><span class="en">MESSAGE</span><h2>現場で信頼を積み上げる</h2></div>
         <p>株式会社CORLYは、大阪市中央区を拠点とする清掃会社です。空室清掃、日常・定期清掃、店舗清掃を通じて、管理会社様・オーナー様・店舗様の「現場を任せられる相手」であり続けることを目指しています。</p>
