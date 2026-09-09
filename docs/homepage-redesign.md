@@ -73,38 +73,61 @@ scripts/build-site-pages.mjs   8ページを共通ヘッダー/フッターか�
 
 差し替え手順: 同じ名前の `.jpg` を `assets/img/` に置き、HTML 内の `ph-xxx.svg` を `ph-xxx.jpg` に置換（スクリプト内を置換して再生成）。写真は Google ドライブの `HP写真` フォルダに入れてもらえれば、こちらで取り込める。
 
-## 5. セキュリティ所見（重要）
+## 5. セキュリティ（2026-09-09 更新）
 
-### 5-1. 現行サイトの改ざん疑い
-検索結果に、corly.co.jp 配下として次のようなページが登録されている（2026-09-08 時点）。
+### 5-0. 先に結論
+- 「完全防御」は存在しない。できるのは **攻撃面を最小にし、侵入されても被害を限定し、異常にすぐ気づく** の3点。以下はその全部。
+- パスワードは変更済み（本人申告）。残りは **A. サーバー側（あなたがXserverパネルで行う）** と **B. ファイル側（このリポジトリで対応済み）** に分かれる。
 
-- `www.corly.co.jp/quality/c99183725` — 「ミニ四駆 パーツ等まとめて」
-- `www.corly.co.jp/original/c99469378` — 「SHIMANO スピニングリール」
-- `corly.co.jp/kuuki-osama/` — タイトルが「ヤマト運輸 トラック ミニカー…」に置き換わっている
+### 5-1. 現行サイトの改ざん疑い（再掲）
+検索結果に corly.co.jp 配下の物販ページ（ミニ四駆・釣具・ミニカー）が登録されている。WordPress改ざんの典型症状。直接確認はできていないため「疑い」。
 
-清掃会社のサイトに物販ページが存在する理由はないため、**WordPress の改ざん（日本語キーワードハック）**の典型症状と判断する。直接確認はできていないので「疑い」扱い。
+### 5-2. A. サーバー側チェックリスト（Xserverサーバーパネル）
+順番どおりに。所要 1〜2時間。
 
-影響: 検索順位の低下、Google の「ハッキングされたサイト」警告、閲覧者のフィッシング誘導、取引先からの信用毀損。
+| # | 作業 | 場所 | 状態 |
+|---|---|---|---|
+| 1 | サーバーパネルの **二段階認証** を有効化 | Xserverアカウント → セキュリティ設定 | 要実施 |
+| 2 | **バックアップ取得**: `corly.co.jp/public_html` 全体と MySQL を手元に保存（証拠・復元用） | ファイルマネージャ / phpMyAdmin | 要実施 |
+| 3 | `public_html` の中身を **全部削除**（wp-admin, wp-content, wp-includes, wp-config.php, xmlrpc.php, 見覚えのない quality/ original/ 等、旧 .htaccess も） | ファイルマネージャ | 要実施 |
+| 4 | WordPress用の **MySQLデータベースを削除**、DBユーザーも削除 | MySQL設定 | 要実施 |
+| 5 | **FTPアカウント**: 不要なサブアカウントを削除。残すものは「FTP制限設定」で **接続元IPを自宅/事務所に限定** | FTPアカウント設定 | 要実施 |
+| 6 | **WAF設定** を全項目 ON（XSS / SQL / ファイル / メール / コマンド / PHP） | WAF設定 | 要実施 |
+| 7 | **SSH** を使わないなら OFF | SSH設定 | 要実施 |
+| 8 | **無料SSL** が有効か確認、「Web改ざん検知」があれば ON | SSL設定 | 要実施 |
+| 9 | **メール**: `info@corly.co.jp` の受信確認。`noreply@corly.co.jp` を作成。**DKIM署名 ON、DMARC を p=quarantine で設定**（なりすまし送信対策） | メールアカウント / DKIM設定 / DNS設定 | 要実施 |
+| 10 | **PHPバージョン** を最新の推奨版に | PHP Ver.切替 | 要実施 |
+| 11 | 新サイトを `site/` から `public_html/` にアップロード（`.htaccess` `.well-known` を含む。隠しファイル表示ON） | ファイルマネージャ | 要実施 |
+| 12 | `public_html` の一つ上に `contact-ratelimit` ディレクトリを作成（権限 700） | ファイルマネージャ | 要実施 |
+| 13 | **Google Search Console**: プロパティ確認 → 「削除」で `quality/` `original/` のURLを申請 → `sitemap.xml` 送信 → 「セキュリティの問題」タブを確認 | Search Console | 要実施 |
+| 14 | **ドメイン管理側**（Xserverドメイン等）も二段階認証、WHOIS代理公開 | ドメイン管理 | 要実施 |
+| 15 | `bash scripts/check-site-security.sh` を実行し NG が 0 になることを確認 | あなたのPC | 要実施 |
 
-### 5-2. 対応手順（この順で）
-1. **Xserver のパスワードを全部変える**: サーバーパネル、FTP、WordPress管理者、MySQL。Xserver の 2段階認証を有効化。
-2. **バックアップ取得**: 現行 `public_html` と DB を丸ごとダウンロードして保管（証拠・復元用）。
-3. **public_html を空にしてから新サイトを配置**: `wp-admin` `wp-content` `wp-includes` `wp-config.php` `xmlrpc.php` と、見覚えのないディレクトリ（`quality/`, `original/` など）を残さない。旧 `.htaccess` も使い回さない。
-4. WordPress を使わないなら **MySQL データベースを削除**（バックアップ後）。
-5. **Google Search Console** で、不正URLを「削除ツール」で申請し、`sitemap.xml` を再送信。`.htaccess` は不正URLに 410 を返すようにしてある。
-6. Xserver の **WAF を ON**、**FTP接続制限（IP制限）を ON**（GitHub Actions を使う時だけ一時解除）。
-7. `info@corly.co.jp` の受信設定を確認（フォームの送信先）。
+### 5-3. B. ファイル側（このリポジトリで対応済み）
+| 対策 | 内容 |
+|---|---|
+| CMSなし | WordPressを廃止。管理画面・DB・プラグインが存在しないので、それらを狙う攻撃は成立しない |
+| PHP実行制限 | `.htaccess` で `contact.php` 以外のPHPを全拒否。`image.jpg.php` のような偽装名も拒否。`assets/` は静的ファイル以外を返さない |
+| 隠し・設定ファイル拒否 | `.env` `.git` `.bak` `.sql` `.log` `.json` `.md` など |
+| HTTPメソッド制限 | GET / POST / HEAD 以外を拒否 |
+| HTTPS強制 + HSTS | 1年、サブドメイン含む |
+| CSP | `default-src 'none'`。自サイトと Google Fonts 以外から何も読まない。改ざんでスクリプトを差し込まれても外部へ通信できない |
+| その他ヘッダ | nosniff, X-Frame-Options DENY, Referrer-Policy, Permissions-Policy, COOP/CORP |
+| 旧URL | WordPress固有パスと改ざんURLに 410 Gone（検索から消える）|
+| フォーム | 同一オリジン検査（Origin/Referer + Sec-Fetch-Site）、Content-Type検査、ハニーポット、最短入力時間、IP別レート制限（5回/時）、ヘッダインジェクション防止、文字数制限、noindex |
+| security.txt | `/.well-known/security.txt` に脆弱性報告先を明記 |
+| 監視 | GitHub Actions が毎週月曜7時に本番サイトを点検（ヘッダ、WP残骸、改ざんURL、スパム語）。NG があればGitHubから通知メール |
+| 情報露出 | ServerSignature Off, X-Powered-By 削除, ディレクトリ一覧禁止 |
 
-### 5-3. 新サイト側の対策
-- `contact.php`: 同一オリジン検査、ハニーポット、最短入力時間、IP別レート制限（5回/時）、メールヘッダインジェクション防止、文字数制限。
-- `.htaccess`: `contact.php` 以外の PHP 実行を拒否（不正アップロードされても動かない）、ディレクトリ一覧禁止、CSP / X-Frame-Options / nosniff / Referrer-Policy。
-- 外部読み込みは Google Fonts のみ。jQuery 等のライブラリなし。
-- HSTS はコメントアウト。HTTPS が安定してから有効化する。
-
-### 5-4. 残るリスク
-- `contact.php` の送信元 `noreply@corly.co.jp` は Xserver 側でメールアドレスとして作成しておくと届きやすい（SPF は Xserver 既定で通る）。未作成でも送信自体は可能なことが多いが、迷惑メール判定される可能性がある。
-- 外部の CAPTCHA は入れていない（外部サービス依存を避けた）。スパムが多ければ Cloudflare Turnstile 追加を検討。
-- 静的サイトなので更新は HTML 編集になる。文言変更は `index.html` を直接編集し、再アップロード。
+### 5-4. 残るリスク（正直に）
+| リスク | 対処 |
+|---|---|
+| FTPパスワード漏えい（PC側のマルウェア等） | FTP IP制限（A-5）が効く。PC側のウイルス対策も |
+| Xserverアカウント自体の乗っ取り | 二段階認証（A-1）。パスワードは他サービスと使い回さない |
+| Xserver側の脆弱性 | 利用者側で対処不能。バックアップ（リポジトリがそのままバックアップ）で復旧 |
+| フォームスパム | 対策済みだが完全ではない。多ければ Cloudflare Turnstile 追加 |
+| メール（`info@`）のなりすまし | DKIM/DMARC（A-9）で受信側が弾ける |
+| Google Fonts への依存 | 外部読み込みはこれのみ。切りたければフォントを同梱に変更可 |
 
 ## 6. デプロイ手順
 

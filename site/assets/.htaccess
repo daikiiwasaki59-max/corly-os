@@ -1,0 +1,6 @@
+<FilesMatch "\.(css|js|png|jpe?g|svg|webp|ico)$">
+  Require all granted
+</FilesMatch>
+<FilesMatch "^(?!.*\.(css|js|png|jpe?g|svg|webp|ico)$)">
+  Require all denied
+</FilesMatch>

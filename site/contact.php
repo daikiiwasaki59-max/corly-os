@@ -23,6 +23,8 @@ mb_language('Japanese');
 mb_internal_encoding('UTF-8');
 header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
+header('X-Robots-Tag: noindex, nofollow');
+header('Cache-Control: no-store');
 
 function bounce(string $key): void {
     header('Location: ./contact.html?error=' . rawurlencode($key), true, 303);
@@ -37,6 +39,17 @@ function clean(string $v, int $max): string {
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     header('Location: ./contact.html', true, 303);
     exit;
+}
+
+// 0. フォーム以外のContent-Type（JSON等）は受け付けない
+$ctype = strtolower((string) ($_SERVER['CONTENT_TYPE'] ?? ''));
+if (strpos($ctype, 'application/x-www-form-urlencoded') !== 0 && strpos($ctype, 'multipart/form-data') !== 0) {
+    bounce('spam');
+}
+// 0-2. ブラウザからの通常送信であることの追加確認（対応ブラウザのみ送るヘッダ）
+$sfs = $_SERVER['HTTP_SEC_FETCH_SITE'] ?? '';
+if ($sfs !== '' && $sfs !== 'same-origin') {
+    bounce('spam');
 }
 
 // 1. 同一オリジン検査（他サイトからのPOSTを拒否）

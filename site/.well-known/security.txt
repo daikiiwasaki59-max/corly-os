@@ -1,0 +1,4 @@
+Contact: mailto:info@corly.co.jp
+Preferred-Languages: ja, en
+Canonical: https://corly.co.jp/.well-known/security.txt
+Expires: 2027-09-30T00:00:00.000Z

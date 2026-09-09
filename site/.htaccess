@@ -1,16 +1,26 @@
-# ---- 株式会社CORLY corly.co.jp ----
-# Xserver（Apache）向け。静的サイト + contact.php のみ。
+# ============================================================
+# 株式会社CORLY corly.co.jp — Xserver (Apache) 用 .htaccess
+# 静的HTML + contact.php のみ。WordPressは使わない。
+# ============================================================
 
-# HTTPS強制（Xserverの無料SSLを有効化してから使う）
+# ---- 情報露出を減らす ----
+ServerSignature Off
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+
+# ---- 許可するHTTPメソッドを GET/POST/HEAD に限定 ----
+<LimitExcept GET POST HEAD>
+  Require all denied
+</LimitExcept>
+
+# ---- HTTPS強制・www なしに統一 ----
 RewriteEngine On
 RewriteCond %{HTTPS} !=on
-RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-
-# www なし に統一
+RewriteRule ^(.*)$ https://corly.co.jp/$1 [R=301,L]
 RewriteCond %{HTTP_HOST} ^www\.corly\.co\.jp$ [NC]
 RewriteRule ^(.*)$ https://corly.co.jp/$1 [R=301,L]
 
-# 旧WordPress URL → 新サイトの該当ページへ
+# ---- 旧WordPress URL → 新ページ（検索評価の引き継ぎ）----
 RedirectMatch 301 ^/company/?$        /company.html
 RedirectMatch 301 ^/service/?$        /
 RedirectMatch 301 ^/cleaning/?$       /regular.html
@@ -21,43 +31,61 @@ RedirectMatch 301 ^/case-studies/?$   /
 RedirectMatch 301 ^/contact/?$        /contact.html
 RedirectMatch 301 ^/privacy-policy/?$ /privacy.html
 
-# 改ざんで作られた不正URLはインデックス削除のため 410 Gone を返す
-RedirectMatch 410 ^/(quality|original)/.*$
-RedirectMatch 410 ^/wp-(admin|login|content|includes).*$
-RedirectMatch 410 ^/xmlrpc\.php$
+# ---- 改ざんで作られたURL・WordPress固有パスは 410 Gone（検索から消す）----
+RedirectMatch 410 ^/(quality|original|product|item|shop|goods|brand|sale)(/.*)?$
+RedirectMatch 410 ^/wp-(admin|login|content|includes|json|cron|config|mail|links-opml|trackback|signup|activate)(\.php|/.*)?$
+RedirectMatch 410 ^/(xmlrpc|wp)\.php$
+RedirectMatch 410 ^/feed/?.*$
+RedirectMatch 410 ^/(category|tag|author|page)/.*$
 
-# ディレクトリ一覧を禁止
-Options -Indexes
-
-# ドットファイル・バックアップ類へのアクセス禁止
-<FilesMatch "^(\.|.*\.(bak|old|orig|log|sql|env|ini|sh|md)$)">
+# ---- 隠しファイル・バックアップ・設定ファイル・ソース類を拒否 ----
+<FilesMatch "(^\.|\.(bak|old|orig|save|swp|tmp|log|sql|sqlite|env|ini|conf|cfg|sh|bash|py|rb|pl|cgi|md|json|lock|yml|yaml|map|dist|txt~|zip|tar|gz|7z|rar)$)">
   Require all denied
 </FilesMatch>
+# robots.txt / security.txt は許可（上の txt~ は末尾チルダ付きのみ拒否）
+<Files "robots.txt">
+  Require all granted
+</Files>
 
-# contact.php 以外のPHP実行を禁止（不正アップロード対策）
-<FilesMatch "\.php$">
+# ---- PHP は contact.php 以外いっさい実行させない（不正アップロード対策）----
+<FilesMatch "\.(php|phtml|php[0-9]|phar|pht|phps)$">
   Require all denied
 </FilesMatch>
 <Files "contact.php">
   Require all granted
 </Files>
 
-# セキュリティヘッダ
+# ---- ファイル名偽装（image.jpg.php など）も拒否 ----
+<FilesMatch "\.(jpe?g|png|gif|svg|webp|css|js|html?)\.">
+  Require all denied
+</FilesMatch>
+
+# ---- セキュリティヘッダ ----
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests"
-  # HSTS は HTTPS が安定稼働してから有効化する
-  # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+  Header always set Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; manifest-src 'self'; upgrade-insecure-requests"
+  # HSTS: 無料SSLを有効化し https://corly.co.jp/ が正常表示できてから有効（1年）
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header unset X-Powered-By
+  Header unset Server
+  # 静的ファイルは長め、HTMLは都度確認
+  <FilesMatch "\.(css|js|png|jpe?g|svg|webp|ico)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.html?$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
 </IfModule>
 
-# キャッシュ
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresByType text/css "access plus 7 days"
-  ExpiresByType application/javascript "access plus 7 days"
-  ExpiresByType image/svg+xml "access plus 30 days"
-  ExpiresByType text/html "access plus 0 seconds"
+# ---- 圧縮 ----
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml
 </IfModule>
+
+# ---- 文字コード ----
+AddDefaultCharset UTF-8

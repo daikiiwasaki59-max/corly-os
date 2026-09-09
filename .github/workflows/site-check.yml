@@ -1,0 +1,19 @@
+# corly.co.jp の週次セキュリティ点検。
+# NG があるとワークフローが失敗し、GitHub から通知メールが届く（Settings → Notifications で Actions の失敗通知を ON）。
+name: Weekly site security check
+
+on:
+  schedule:
+    - cron: '0 22 * * 0'   # 毎週月曜 07:00 JST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run checks against https://corly.co.jp
+        run: bash scripts/check-site-security.sh https://corly.co.jp
