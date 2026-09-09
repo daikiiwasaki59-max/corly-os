@@ -25,7 +25,7 @@ header('X-Content-Type-Options: nosniff');
 header('Referrer-Policy: same-origin');
 
 function bounce(string $key): void {
-    header('Location: ./?error=' . rawurlencode($key) . '#contact', true, 303);
+    header('Location: ./contact.html?error=' . rawurlencode($key), true, 303);
     exit;
 }
 function clean(string $v, int $max): string {
@@ -35,7 +35,7 @@ function clean(string $v, int $max): string {
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
-    header('Location: ./#contact', true, 303);
+    header('Location: ./contact.html', true, 303);
     exit;
 }
 

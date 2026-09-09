@@ -31,45 +31,47 @@
 
 この環境からは corly.co.jp に直接アクセスできなかった（ネットワーク制限）。事実は検索エンジンのスニペットから拾っているため、**公開前に本人確認必須**。
 
-## 3. デザイン方針（第2版: 黒×水色・清掃事業のみ）
+## 3. デザイン方針（第3版・2026-09-09）
 
-- ブランドカラーは Google ドライブのロゴデータ（color_symbol.png）から実測した水色 `#5CE1E6` × 黒 `#05070B`。
-- ロゴは `assets/img/logo-white.png`（黒背景用）/ `logo-color.png` / `logo-symbol.png`。ドライブの `white_yoko.png` `color_yoko.png` `color_symbol.png` を余白トリミングして使用。
-- 見出しは Zen Kaku Gothic New 900、英字は Syne 800、本文は Noto Sans JP、ラベルは IBM Plex Mono。
-- 動き: ヒーロー背景に WebGL の水面コースティクス（常時アニメーション、`prefers-reduced-motion` で停止）、見出しの文字分割アニメーション、写真ティッカー、スクロール連動パララックス、Before/After スライダー、数値カウントアップ、カーソル追従グロー（マウス環境のみ）。
-- 掲載内容は清掃事業のみ: 空室清掃 / 日常・定期清掃 / 店舗・飲食店清掃（グリストラップ）/ 官公庁・公共施設（入札）。MEO・健康経営・空気の王様・燃料は外した。
-
-### 画像について（重要）
-- この環境から外部の画像CDN（Unsplash / Pexels / Gamma / Canva / Google Photos）へは**ネットワークポリシーで到達できない**。通るのは GitHub と Google ドライブ（MCP経由）のみ。
-- そのため写真枠はすべて **自前生成のアブストラクト画像**（WebGLシェーダーで描いた水面・水滴・床反射・ガラス・ステンレス・泡）で埋めている。`assets/img/ph-*.jpg`, `hero-caustics.jpg`, `ba-before.jpg`, `ba-after.jpg`。
-- Before/After は「※イメージ画像」と明記済み。実写に差し替えるまで、施工実績として誤認されない表現にしてある。
-- **実写への差し替え手順**: Google ドライブに `HP写真` フォルダを作り、写真を入れる → 次回セッションで同名ファイルに置換する（ドライブ経由なら取得できる）。Canva 内の「corly清掃紹介」「Instagram投稿 - 清掃前 → 清掃後」「各種チラシデータ」に実写があるはずなので、そこから書き出してドライブへ。
-- 推奨サイズ: 横長 1800×1100 以上、正方形 1400×1400、縦長 1400×1750。JPEG 品質 80 程度。
-
-| ファイル | 用途 | 差し替え推奨の実写 |
-|---|---|---|
-| hero-caustics.jpg | ヒーロー背景（WebGLが動かない環境用のポスター） | 夜のオフィス床洗浄など、暗めで光のある現場写真 |
-| ph-droplets-wide.jpg | 空室清掃パネル | 清掃後の空室（フローリング・キッチン） |
-| ph-floor.jpg | 定期清掃パネル・ティッカー | 床洗浄・ポリッシャー作業 |
-| ph-steel.jpg | 店舗清掃パネル・ティッカー | 厨房・グリストラップ作業 |
-| ph-glass.jpg | 公共施設パネル・お問い合わせ背景 | 施設エントランス・ガラス |
-| ph-water-tall.jpg | 品質セクション（縦） | 有資格者の作業風景（縦位置） |
-| ph-foam.jpg | 会社概要 | 事務所外観 or 代表写真 |
-| ba-before.jpg / ba-after.jpg | Before/After スライダー | 同一アングルの清掃前後（必須: 同じ構図） |
+- 参照構成: 庄栄興産株式会社のサイト（bigpengold.com）と同じ「トップ／サービス別ページ／会社概要／お問い合わせ／プライバシーポリシー」の一般的な企業サイト型。
+- 白ベース。文字は黒、アクセントにロゴの水色 `#5CE1E6`（ボタン・下線）と、文字用の濃い水色 `#0FA3A8`。
+- フォントは Noto Sans JP のみ。派手な演出なし（スクロール時の軽いフェードのみ）。
+- 掲載は清掃事業のみ: 空室清掃 / 日常・定期清掃 / 店舗・飲食店清掃（グリストラップ）。
+- 写真は全てグレーの仮枠（SVG）。同名の JPG に差し替えれば反映される（§4-2）。
 
 ## 4. ファイル構成
 
 ```
 site/
-  index.html        トップ（全セクション）
-  privacy.html      プライバシーポリシー（雛形・要差し替え）
-  thanks.html       送信完了
-  contact.php       フォーム受信 → info@corly.co.jp へメール
-  .htaccess         HTTPS強制 / 旧URL転送 / セキュリティヘッダ / PHP実行制限
-  robots.txt, sitemap.xml
-  assets/site.css, site.js, favicon.svg
-.github/workflows/deploy-site.yml   手動実行の FTPS デプロイ
+  index.html      トップ（サービス3枚・選ばれる理由・報告書・施工写真・エリア・流れ・会社概要抜粋・CTA）
+  vacant.html     空室清掃
+  regular.html    日常・定期清掃
+  store.html      店舗・飲食店清掃
+  company.html    会社概要（代表メッセージ・概要表）
+  contact.html    お問い合わせ（フォーム）
+  privacy.html    プライバシーポリシー（雛形・要差し替え）
+  thanks.html     送信完了
+  contact.php     フォーム受信 → info@corly.co.jp
+  .htaccess / robots.txt / sitemap.xml
+  assets/site.css, site.js
+  assets/img/     logo-color.png, logo-white.png, logo-symbol.png, favicon.png, ph-*.svg（仮写真）
+scripts/build-site-pages.mjs   8ページを共通ヘッダー/フッターから生成するスクリプト（node scripts/build-site-pages.mjs）
 ```
+
+### 4-1. 文言を直すとき
+`scripts/build-site-pages.mjs` を編集して `node scripts/build-site-pages.mjs` を実行すると `site/*.html` が再生成される。HTML を直接編集してもよいが、その場合はスクリプト側と二重管理になる。
+
+### 4-2. 写真の差し替え
+| ファイル | 場所 | 推奨 |
+|---|---|---|
+| ph-hero | トップのメイン | 清掃作業中のスタッフ、または清掃後の明るい室内（横長 16:9） |
+| ph-vacant / ph-regular / ph-store | サービスカード・各ページ | 各サービスの現場（4:3） |
+| ph-report | トップ「作業は、写真で報告します」 | 報告書の実物 |
+| ph-work1〜4 | トップ「施工写真」 | 作業前後（4:3） |
+| ph-staff | 未使用（予備） | スタッフ写真 |
+| ph-office | 会社概要 | 事務所外観 |
+
+差し替え手順: 同じ名前の `.jpg` を `assets/img/` に置き、HTML 内の `ph-xxx.svg` を `ph-xxx.jpg` に置換（スクリプト内を置換して再生成）。写真は Google ドライブの `HP写真` フォルダに入れてもらえれば、こちらで取り込める。
 
 ## 5. セキュリティ所見（重要）
 

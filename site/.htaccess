@@ -10,15 +10,15 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 RewriteCond %{HTTP_HOST} ^www\.corly\.co\.jp$ [NC]
 RewriteRule ^(.*)$ https://corly.co.jp/$1 [R=301,L]
 
-# 旧WordPress URL → 新サイトの該当セクションへ
-RedirectMatch 301 ^/company/?$        /#company
-RedirectMatch 301 ^/service/?$        /#services
-RedirectMatch 301 ^/cleaning/?$       /#services
-RedirectMatch 301 ^/project/?$        /#services
-RedirectMatch 301 ^/jis/?$            /#why
-RedirectMatch 301 ^/kuuki-osama/?$    /#services
-RedirectMatch 301 ^/case-studies/?$   /#results
-RedirectMatch 301 ^/contact/?$        /#contact
+# 旧WordPress URL → 新サイトの該当ページへ
+RedirectMatch 301 ^/company/?$        /company.html
+RedirectMatch 301 ^/service/?$        /
+RedirectMatch 301 ^/cleaning/?$       /regular.html
+RedirectMatch 301 ^/project/?$        /
+RedirectMatch 301 ^/jis/?$            /company.html
+RedirectMatch 301 ^/kuuki-osama/?$    /
+RedirectMatch 301 ^/case-studies/?$   /
+RedirectMatch 301 ^/contact/?$        /contact.html
 RedirectMatch 301 ^/privacy-policy/?$ /privacy.html
 
 # 改ざんで作られた不正URLはインデックス削除のため 410 Gone を返す

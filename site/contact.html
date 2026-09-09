@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>お問い合わせ｜株式会社CORLY</title>
+<meta name="description" content="株式会社CORLYへのお問い合わせ・お見積依頼。空室清掃・定期清掃・店舗清掃のご相談はフォームまたは電話（06-4256-2693）でどうぞ。見積は無料です。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="お問い合わせ｜株式会社CORLY">
+<meta property="og:description" content="株式会社CORLYへのお問い合わせ・お見積依頼。空室清掃・定期清掃・店舗清掃のご相談はフォームまたは電話（06-4256-2693）でどうぞ。見積は無料です。">
+<meta property="og:url" content="https://corly.co.jp/contact.html">
+<meta property="og:image" content="https://corly.co.jp/assets/img/logo-color.png">
+<meta property="og:site_name" content="株式会社CORLY">
+<meta property="og:locale" content="ja_JP">
+<link rel="canonical" href="https://corly.co.jp/contact.html">
+<link rel="icon" href="assets/img/favicon.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="header">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="株式会社CORLY トップページ"><img src="assets/img/logo-color.png" alt="CORLY inc." width="1200" height="323"></a>
+    <nav class="nav" aria-label="メインナビゲーション">
+      <a href="index.html">トップ</a>
+      <a href="vacant.html">空室清掃</a>
+      <a href="regular.html">日常・定期清掃</a>
+      <a href="store.html">店舗・飲食店清掃</a>
+      <a href="company.html">会社概要</a>
+      <a class="tel" href="tel:0642562693">06-4256-2693</a>
+      <a class="btn cyan" href="contact.html">お問い合わせ</a>
+    </nav>
+    <button class="menu-btn" type="button" aria-label="メニュー" aria-expanded="false"><span></span></button>
+  </div>
+</header>
+<main>
+
+<div class="page-head">
+  <div class="wrap">
+    <span class="en">CONTACT</span>
+    <h1>お問い合わせ</h1>
+    <div class="crumb"><a href="index.html">トップ</a><span>›</span><span>お問い合わせ</span></div>
+  </div>
+</div>
+<section class="section">
+  <div class="wrap">
+    <div class="contact-grid">
+      <div class="fade">
+        <p>お見積・ご相談は無料です。1室だけ、1回だけのご依頼でも構いません。現場を確認してからお見積を提示します。</p>
+        <dl class="info mt-22">
+          <dt>お電話</dt><dd class="big"><a href="tel:0642562693">06-4256-2693</a></dd>
+          <dt>メール</dt><dd><a href="mailto:info@corly.co.jp">info@corly.co.jp</a></dd>
+          <dt>FAX</dt><dd>06-4560-9079</dd>
+          <dt>所在地</dt><dd>〒541-0053<br>大阪府大阪市中央区本町2-3-4 アソルティ本町4F</dd>
+        </dl>
+      </div>
+      <div class="fade">
+        <div id="form-status" class="alert" role="status" hidden></div>
+        <form action="contact.php" method="post" data-contact novalidate>
+          <div class="grid-2">
+            <div class="field"><label for="f-company">会社名・物件名<i>任意</i></label><input id="f-company" name="company" type="text" maxlength="100" autocomplete="organization"></div>
+            <div class="field"><label for="f-name">お名前<b>必須</b></label><input id="f-name" name="name" type="text" maxlength="60" required autocomplete="name"></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label for="f-email">メールアドレス<b>必須</b></label><input id="f-email" name="email" type="email" maxlength="120" required autocomplete="email"></div>
+            <div class="field"><label for="f-tel">電話番号<i>任意</i></label><input id="f-tel" name="tel" type="tel" maxlength="20" autocomplete="tel"></div>
+          </div>
+          <div class="field">
+            <label for="f-topic">ご依頼内容<b>必須</b></label>
+            <select id="f-topic" name="topic" required>
+              <option value="">選択してください</option>
+              <option>空室清掃</option>
+              <option>日常清掃・定期清掃</option>
+              <option>店舗・飲食店清掃（グリストラップ）</option>
+              <option>その他</option>
+            </select>
+          </div>
+          <div class="field"><label for="f-msg">現場の情報・ご相談内容<b>必須</b></label><textarea id="f-msg" name="message" maxlength="3000" required placeholder="物件の場所（市区町村）、広さや間取り、希望の時期、困っていることなど"></textarea></div>
+          <label class="consent"><input type="checkbox" name="consent" value="1" required> <span><a href="privacy.html">プライバシーポリシー</a>に同意のうえ送信します。</span></label>
+          <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+          <input type="hidden" name="ts" value="">
+          <div><button class="btn cyan lg" type="submit">送信する</button></div>
+          <p class="form-note">送信いただいた内容は、お問い合わせへの回答のみに使用します。</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <a class="logo" href="index.html"><img src="assets/img/logo-color.png" alt="CORLY inc." width="1200" height="323"></a>
+        <p class="addr">株式会社CORLY<br>〒541-0053 大阪府大阪市中央区本町2-3-4 アソルティ本町4F<br>TEL 06-4256-2693 ／ FAX 06-4560-9079</p>
+      </div>
+      <nav class="fnav" aria-label="フッターナビゲーション">
+        <a href="index.html">トップ</a>
+        <a href="vacant.html">空室清掃</a>
+        <a href="regular.html">日常・定期清掃</a>
+        <a href="store.html">店舗・飲食店清掃</a>
+        <a href="company.html">会社概要</a>
+        <a href="contact.html">お問い合わせ</a>
+        <a href="privacy.html">プライバシーポリシー</a>
+      </nav>
+    </div>
+    <div class="copy"><span>© 2026 CORLY Inc.</span><span>法人番号 7120001269368</span></div>
+  </div>
+</footer>
+<script src="assets/site.js" defer></script>
+</body>
+</html>
