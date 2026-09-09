@@ -1,19 +1,33 @@
-# 使用画像クレジット（自動取得・Openverse / CC0・パブリックドメインのみ）
+# 使用画像クレジット
 
-取得日: 2026-09-09
+## 目視レビューの結果（2026-09-09）
 
-法的にはCC0/PDMのため表記義務はないが、出典追跡のために記録している。
+GitHub Actions 経由で Openverse（CC0/PDM）から自動取得した11枚を全て目視確認した。
+清掃業と無関係、または不適切な写真が大半だったため、**1枚を除いて削除した**。
+
+| 枠 | 判定 | 理由 |
+|---|---|---|
+| work1 | 採用 | フローリングにモップ、内容と一致 |
+| hero | 削除 | 米海軍の医療デモ展示の写真（無関係） |
+| vacant | 削除 | 家具付きの居間（「空室」＝家具のない部屋の趣旨と矛盾） |
+| regular | 削除 | 花のマクロ写真（無関係） |
+| store | 削除 | 消防署関係者の記者会見写真（無関係） |
+| report | 削除 | 用途不明の接客シーン（報告書らしさがなく弱い） |
+| office | 削除 | ガラスの抽象写真（事務所外観として弱い） |
+| staff | 削除 | ネイルサロンの施術写真（清掃スタッフと誤認される） |
+| work2 | 削除 | 軍用ヘリコプターの写真（"window cleaning" というイベント名に誤反応） |
+| work3 | 削除・要注意 | **上半身裸の人物写真。企業サイトに掲載してはいけない内容** |
+| work4 | 削除 | 錆びた古い容器が並ぶ物置（清掃用品どころか「汚れ」の印象） |
+
+## 教訓
+Openverse は CC0/パブリックドメインに絞ると母数が非常に少なく、英語の一般的なキーワードでは
+無関係な結果（花、軍用機、医療デモ等）が混ざる。清掃業のような specific な業種写真には向かない。
+Pexels・Pixabay（要・無料APIキー）の方がストックフォトとして母数が多く適切な確率が高い。
+
+## 採用している写真
 
 | 枠 | タイトル | 作者 | ライセンス | 出典URL |
 |---|---|---|---|---|
-| hero | 221102-N-HU933-1334 | NavyMedicine | PDM | https://www.flickr.com/photos/61270229@N05/52484594148 |
-| vacant | Dining Room | Kelly Ishmael | CC0 | https://stocksnap.io/photo/dining-room-DYTXNUKGP2 |
-| regular | Erigeron annuus , Daisy Fleabane, Howard Co, Md, H Metzman_2018-06-19-21.26.22 ZS PMax UDR | Sam Droege | PDM | https://www.flickr.com/photos/54563451@N08/49725883736 |
-| store | 20210830-RD-LSC-0716 | USDAgov | PDM | https://www.flickr.com/photos/41284017@N08/51418187028 |
-| report | Clipboard Hand | Kristin Hardwick | CC0 | https://stocksnap.io/photo/clipboard-hand-TRKNLIGFAJ |
-| office | Office building exterior | 不明 | CC0 | https://www.rawpixel.com/image/6038290/photo-image-public-domain-house-glass |
-| staff | People Hands | Freestocks.org | CC0 | https://stocksnap.io/photo/people-hands-XX356Q6EI4 |
 | work1 | Mop Sweeping | Michal Jarmoluk | CC0 | https://stocksnap.io/photo/mop-sweeping-J4C1WJDMMU |
-| work2 | 17 The window cleaning Chinook helicopter - IMG_6249 RIAT 2025 - Friday 18 July | Jodiepedia | CC0 | https://www.flickr.com/photos/75126686@N00/54665189139 |
-| work3 | Stomach Vacuum | medipics1066 | PDM | https://www.flickr.com/photos/122673998@N08/51705319379 |
-| work4 | bookshelf tools, cleaning supplies, labeled | 不明 | CC0 | https://www.rawpixel.com/image/3295498/free-photo-image-garage-storage-mug-collection |
+
+他の枠は仮のグレー枠（`ph-<slot>.svg`）に戻っている。
