@@ -82,7 +82,8 @@ if (!is_dir($dir) && !@mkdir($dir, 0700, true)) {
 $file = $dir . '/rl_' . hash('sha256', $ip) . '.json';
 $hits = [];
 if (is_file($file)) {
-    $hits = json_decode((string) file_get_contents($file), true) ?: [];
+    $hits = json_decode((string) file_get_contents($file), true);
+    if (!is_array($hits)) { $hits = []; }
 }
 $now  = time();
 $hits = array_values(array_filter($hits, fn($t) => is_int($t) && ($now - $t) < RATE_WINDOW));
@@ -132,7 +133,7 @@ $body = implode("\n", [
 
 $headers  = 'From: ' . mb_encode_mimeheader(FROM_NAME, 'ISO-2022-JP-MS') . ' <' . FROM_ADDRESS . ">\r\n";
 $headers .= 'Reply-To: ' . $email . "\r\n";
-$headers .= "X-Mailer: PHP/" . PHP_VERSION;
+$headers .= 'X-Mailer: corly.co.jp contact form';
 
 $sent = @mb_send_mail(TO_ADDRESS, $subject, $body, $headers);
 if (!$sent) {

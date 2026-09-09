@@ -54,6 +54,8 @@ RedirectMatch 410 ^/(category|tag|author|page)/.*$
 <Files "contact.php">
   Require all granted
 </Files>
+# サブディレクトリに置かれた contact.php は実行させない（ルート直下の1ファイルのみ）
+RewriteRule ^.+/contact\.php$ - [F,L]
 
 # ---- ファイル名偽装（image.jpg.php など）も拒否 ----
 <FilesMatch "\.(jpe?g|png|gif|svg|webp|css|js|html?)\.">
