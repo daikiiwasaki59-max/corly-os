@@ -1,7 +1,8 @@
 # 無料写真（Openverse / CC0・パブリックドメインのみ、ログイン・APIキー不要）を
 # 自動取得して site/assets/img/ph-*.jpg に保存し、ページを再生成してコミットする。
 #
-# 実行方法: GitHub の Actions タブ → "Fetch free stock photos" → Run workflow
+# 実行方法: workflow_dispatch（GitHub の Actions タブ）。
+# または、このファイルか scripts/fetch-free-photos.py に変更を push すると自動起動する。
 # 実行後: このセッション（または次回セッション）で git pull すれば新しい写真が反映される。
 #
 # 取得できる写真の質はOpenverseの在庫次第で不安定（該当なしの枠は仮のグレー枠のまま残る）。
@@ -10,6 +11,12 @@ name: Fetch free stock photos
 
 on:
   workflow_dispatch:
+  # 手動実行に加えて、このワークフロー自体か取得スクリプトを更新した push でも起動する。
+  # （画像取得の結果コミットはこのパスに触れないので、無限ループにはならない）
+  push:
+    paths:
+      - '.github/workflows/fetch-photos.yml'
+      - 'scripts/fetch-free-photos.py'
 
 permissions:
   contents: write
