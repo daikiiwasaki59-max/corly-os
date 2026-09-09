@@ -1,22 +1,28 @@
-# 無料写真（Openverse / CC0・パブリックドメインのみ、ログイン・APIキー不要）を
-# 自動取得して site/assets/img/ph-*.jpg に保存し、ページを再生成してコミットする。
+# 写真を Pexels / Pixabay の無料APIから自動取得し、site/assets/img/ph-*.jpg に保存して
+# ページを再生成・コミットする。
 #
-# 実行方法: workflow_dispatch（GitHub の Actions タブ）。
-# または、このファイルか scripts/fetch-free-photos.py に変更を push すると自動起動する。
-# 実行後: このセッション（または次回セッション）で git pull すれば新しい写真が反映される。
+# 事前準備（1回だけ）:
+#   1. https://www.pexels.com/api/ で無料APIキーを発行（登録のみ、カード不要）
+#      および/または https://pixabay.com/api/docs/ で無料APIキーを発行（要アカウント登録）
+#   2. GitHub のこのリポジトリ → Settings → Secrets and variables → Actions
+#      → New repository secret で以下を登録（キーの値はチャットに貼らないこと）
+#        PEXELS_API_KEY   … Pexelsのキー
+#        PIXABAY_API_KEY  … Pixabayのキー（どちらか一方でも可）
 #
-# 取得できる写真の質はOpenverseの在庫次第で不安定（該当なしの枠は仮のグレー枠のまま残る）。
-# 実際の施工写真に置き換えたい場合は photos-inbox/README.md の手順で差し替える。
-name: Fetch free stock photos
+# 実行方法:
+#   - GitHub の Actions タブ → "Fetch stock photos (Pexels / Pixabay)" → Run workflow
+#   - または、このファイルか scripts/fetch-stock-photos.py に変更を push すると自動起動する
+#
+# 取得結果は必ず人間またはClaudeが目視確認してから公開すること
+# （自動取得だけで無関係・不適切な写真が混ざった実例があるため。photos-inbox/CREDITS.md 参照）。
+name: Fetch stock photos (Pexels / Pixabay)
 
 on:
   workflow_dispatch:
-  # 手動実行に加えて、このワークフロー自体か取得スクリプトを更新した push でも起動する。
-  # （画像取得の結果コミットはこのパスに触れないので、無限ループにはならない）
   push:
     paths:
       - '.github/workflows/fetch-photos.yml'
-      - 'scripts/fetch-free-photos.py'
+      - 'scripts/fetch-stock-photos.py'
 
 permissions:
   contents: write
@@ -34,8 +40,11 @@ jobs:
       - name: Install dependencies
         run: pip install --quiet requests pillow
 
-      - name: Fetch CC0/PD photos from Openverse
-        run: python scripts/fetch-free-photos.py
+      - name: Fetch photos from Pexels / Pixabay
+        env:
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        run: python scripts/fetch-stock-photos.py
 
       - uses: actions/setup-node@v4
         with:
@@ -50,8 +59,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add site/assets/img site/*.html photos-inbox/CREDITS.md
           if git diff --cached --quiet; then
-            echo "変更なし（取得できた写真がありませんでした）"
+            echo "変更なし（Secretsが未設定か、該当写真がありませんでした）"
           else
-            git commit -m "Fetch free CC0/PD stock photos from Openverse and rebuild pages"
+            git commit -m "Fetch stock photos from Pexels/Pixabay and rebuild pages"
             git push
           fi
