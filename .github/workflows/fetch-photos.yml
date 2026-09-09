@@ -1,0 +1,50 @@
+# 無料写真（Openverse / CC0・パブリックドメインのみ、ログイン・APIキー不要）を
+# 自動取得して site/assets/img/ph-*.jpg に保存し、ページを再生成してコミットする。
+#
+# 実行方法: GitHub の Actions タブ → "Fetch free stock photos" → Run workflow
+# 実行後: このセッション（または次回セッション）で git pull すれば新しい写真が反映される。
+#
+# 取得できる写真の質はOpenverseの在庫次第で不安定（該当なしの枠は仮のグレー枠のまま残る）。
+# 実際の施工写真に置き換えたい場合は photos-inbox/README.md の手順で差し替える。
+name: Fetch free stock photos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install --quiet requests pillow
+
+      - name: Fetch CC0/PD photos from Openverse
+        run: python scripts/fetch-free-photos.py
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Rebuild pages with new photos
+        run: node scripts/build-site-pages.mjs
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/assets/img site/*.html photos-inbox/CREDITS.md
+          if git diff --cached --quiet; then
+            echo "変更なし（取得できた写真がありませんでした）"
+          else
+            git commit -m "Fetch free CC0/PD stock photos from Openverse and rebuild pages"
+            git push
+          fi
