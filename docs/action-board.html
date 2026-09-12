@@ -1,0 +1,472 @@
+<title>今週の営業ボード</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700&family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#EDF0F3; --surface:#FFFFFF; --surface-2:#F5F8FA;
+    --ink:#16232E; --ink-2:#46586A; --ink-3:#7C8C9B; --line:#D3DBE2;
+    --blue:#1F5C8B; --blue-soft:#E2EBF3; --blue-line:#B8CCDD;
+    --ochre:#8F6310; --ochre-soft:#F4ECDA; --ochre-line:#DFCC9F;
+    --shu:#A93226; --shu-soft:#F6E5E2; --shu-line:#E0BDB7;
+    --green:#2E6B4F; --green-soft:#E0EFE7;
+    --display:"Shippori Mincho B1",'Hiragino Mincho ProN',"Yu Mincho",serif;
+    --body:"Noto Sans JP",'Hiragino Sans',"Yu Gothic",system-ui,sans-serif;
+    --mono:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#111921; --surface:#18242F; --surface-2:#1D2B37;
+      --ink:#E7EDF3; --ink-2:#A8B9C7; --ink-3:#77899A; --line:#2B3D4C;
+      --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
+      --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
+      --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+      --green:#6FBE96; --green-soft:#17301F;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#111921; --surface:#18242F; --surface-2:#1D2B37;
+    --ink:#E7EDF3; --ink-2:#A8B9C7; --ink-3:#77899A; --line:#2B3D4C;
+    --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
+    --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
+    --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+    --green:#6FBE96; --green-soft:#17301F;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--body);
+    font-size:15px; line-height:1.7; -webkit-font-smoothing:antialiased;
+    padding-inline:14px; padding-block:0;
+  }
+  .wrap{max-width:720px; margin:0 auto; padding-block:28px 72px; display:flex; flex-direction:column; gap:30px}
+  h1,h2{font-family:var(--display); font-weight:700; margin:0; text-wrap:balance; line-height:1.35}
+  h1{font-size:clamp(23px,5.6vw,30px)}
+  h2{font-size:clamp(17px,4.2vw,20px)}
+  p{margin:0}
+  .num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+  .eyebrow{font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-3); font-weight:700}
+
+  header{display:flex; flex-direction:column; gap:9px; border-bottom:2px solid var(--ink); padding-bottom:16px}
+  .meta{display:flex; flex-wrap:wrap; gap:4px 16px; font-size:12px; color:var(--ink-2)}
+  .meta b{font-weight:500; color:var(--ink-3)}
+
+  /* progress */
+  .prog{display:flex; flex-direction:column; gap:7px}
+  .prog .row{display:flex; justify-content:space-between; align-items:baseline; font-size:12px; color:var(--ink-3)}
+  .prog .row b{font-family:var(--mono); font-size:15px; color:var(--ink); font-weight:500}
+  .meter{height:8px; background:var(--surface-2); border:1px solid var(--line); overflow:hidden}
+  .meter i{display:block; height:100%; background:var(--green); width:0; transition:width .25s ease}
+  @media (prefers-reduced-motion:reduce){ .meter i{transition:none} }
+
+  /* next up */
+  .next{
+    background:var(--surface); border:1px solid var(--line); border-left:4px solid var(--shu);
+    padding:15px 16px; display:flex; flex-direction:column; gap:5px;
+  }
+  .next .k{font-size:10.5px; letter-spacing:.15em; color:var(--shu); font-weight:700}
+  .next .v{font-size:15.5px; font-weight:500; line-height:1.6}
+  .next .s{font-size:12px; color:var(--ink-2)}
+
+  section{display:flex; flex-direction:column; gap:14px}
+  .rule{display:flex; align-items:baseline; justify-content:space-between; gap:12px; border-bottom:1px solid var(--line); padding-bottom:7px}
+  .rule .no{font-family:var(--mono); font-size:11.5px; color:var(--ink-3); white-space:nowrap}
+
+  /* tasks */
+  .grp{display:flex; flex-direction:column; gap:0}
+  .grp h3{
+    margin:0; font-family:var(--body); font-size:10.5px; letter-spacing:.14em; font-weight:700;
+    padding:14px 0 6px;
+  }
+  .grp h3.r{color:var(--blue)} .grp h3.f{color:var(--ochre)} .grp h3.c{color:var(--ink-3)}
+  .t{
+    display:flex; gap:11px; align-items:flex-start; padding:10px 12px;
+    background:var(--surface); border:1px solid var(--line); margin-bottom:-1px;
+    cursor:pointer; text-align:left; width:100%; font:inherit; color:inherit;
+  }
+  .t:focus-visible{outline:2px solid var(--blue); outline-offset:1px; position:relative; z-index:1}
+  .box{
+    flex:0 0 19px; height:19px; margin-top:3px; border:1.5px solid var(--ink-3);
+    display:grid; place-items:center; font-size:12px; color:transparent; line-height:1;
+  }
+  .t[aria-pressed="true"] .box{background:var(--green); border-color:var(--green); color:#fff}
+  .t[aria-pressed="true"] .txt{color:var(--ink-3); text-decoration:line-through; text-decoration-color:var(--line)}
+  .txt{font-size:13.5px; line-height:1.65}
+  .txt em{display:block; font-style:normal; font-size:11.5px; color:var(--ink-3); margin-top:2px}
+
+  /* prospects */
+  .ptools{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:12px; color:var(--ink-3)}
+  .chip{
+    font:inherit; font-size:11.5px; padding:3px 10px; border:1px solid var(--line);
+    background:var(--surface); color:var(--ink-2); cursor:pointer;
+  }
+  .chip[aria-pressed="true"]{border-color:var(--blue); color:var(--blue); font-weight:500; background:var(--blue-soft)}
+  .plist{display:flex; flex-direction:column; gap:0}
+  .p{
+    display:grid; grid-template-columns:1fr auto; gap:4px 10px; align-items:center;
+    padding:11px 12px; background:var(--surface); border:1px solid var(--line); margin-bottom:-1px;
+  }
+  .p.done{background:var(--surface-2)}
+  .p .nm{font-size:13.5px; font-weight:500; line-height:1.45}
+  .p .sub{grid-column:1/2; font-size:11.5px; color:var(--ink-3); display:flex; gap:9px; flex-wrap:wrap; align-items:center}
+  .p .sub a{color:var(--blue); text-decoration:none; border-bottom:1px solid var(--blue-line)}
+  .p select{
+    grid-row:1/3; font:inherit; font-size:12px; padding:5px 7px; background:var(--surface-2);
+    color:var(--ink); border:1px solid var(--line); min-width:94px;
+  }
+  .p select:focus-visible{outline:2px solid var(--blue); outline-offset:1px}
+  .city{font-family:var(--mono); font-size:11px; padding:1px 6px; background:var(--blue-soft); color:var(--blue); border:1px solid var(--blue-line)}
+
+  /* scripts */
+  details{background:var(--surface); border:1px solid var(--line); margin-bottom:-1px}
+  summary{padding:12px 14px; cursor:pointer; font-size:13.5px; font-weight:500; list-style:none; display:flex; justify-content:space-between; gap:10px; align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"開く"; font-size:11px; color:var(--ink-3); font-weight:400}
+  details[open] summary::after{content:"閉じる"}
+  .body{padding:0 14px 14px; display:flex; flex-direction:column; gap:9px}
+  .body textarea{
+    width:100%; min-height:190px; font-family:var(--mono); font-size:11.5px; line-height:1.75;
+    background:var(--surface-2); color:var(--ink); border:1px solid var(--line); padding:11px; resize:vertical;
+  }
+  .btn{
+    font:inherit; font-size:12.5px; font-weight:500; padding:7px 14px; cursor:pointer;
+    background:var(--blue); color:#fff; border:1px solid var(--blue); align-self:flex-start;
+  }
+  .btn:focus-visible{outline:2px solid var(--ink); outline-offset:2px}
+  .hint{font-size:11.5px; color:var(--ink-3)}
+
+  .warn{background:var(--shu-soft); border:1px solid var(--shu-line); padding:14px 16px; font-size:13px; line-height:1.7}
+  .warn b{color:var(--shu)}
+  footer{font-size:11.5px; color:var(--ink-3); border-top:1px solid var(--line); padding-top:14px; line-height:1.8}
+  footer a{color:var(--blue)}
+  .savestate{font-size:11px; color:var(--ink-3); font-family:var(--mono)}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">W1 ／ 2026-09-12 〜 09-18</div>
+    <h1>今週の営業ボード</h1>
+    <div class="meta">
+      <span><b>60日</b> 9/12 〜 11/10</span>
+      <span><b>今週の的</b> 動ける状態を作る</span>
+      <span class="savestate" id="savestate">保存先を確認中</span>
+    </div>
+  </header>
+
+  <div class="prog">
+    <div class="row"><span>今週のタスク</span><span><b id="pdone">0</b> / <b id="ptotal">0</b></span></div>
+    <div class="meter"><i id="pbar"></i></div>
+  </div>
+
+  <div class="next">
+    <div class="k">最初の1つ</div>
+    <div class="v" id="nextv">会社の所在地・電話・メールを決める</div>
+    <div class="s" id="nexts">これがないとメールのフッターが作れず、管理会社にも燃料にも1通も出せない。ここが全部の栓になっている。</div>
+  </div>
+
+  <section>
+    <div class="rule"><h2>今週やること</h2><span class="no">タップで完了</span></div>
+    <div class="grp" id="tasks"></div>
+  </section>
+
+  <section>
+    <div class="rule"><h2>アタック先 21社</h2><span class="no">優先度 高</span></div>
+    <div class="ptools">
+      <button class="chip" id="f-all" aria-pressed="true">すべて</button>
+      <button class="chip" id="f-todo" aria-pressed="false">未着手のみ</button>
+      <span id="pcount"></span>
+    </div>
+    <div class="plist" id="prospects"></div>
+    <p class="hint">電話番号は名簿に載っていない。URLのある先は会社概要ページで取れる。取れたら「TEL取得」にする。</p>
+  </section>
+
+  <section>
+    <div class="rule"><h2>使う文面</h2><span class="no">{ } を埋めてから送る</span></div>
+    <div id="scripts"></div>
+    <p class="hint">1通目に価格と実績の数字を入れない。送る前に、宛先が連絡NGでないか、紹介者の名前を使う許可があるかを確認する。</p>
+  </section>
+
+  <div class="warn">
+    <b>送信はまだ止めている。</b> 会社の所在地・電話・メールが決まるまで、フッターのない営業メールになる。特定電子メール法の表示義務を満たさないので、先にそこを埋める。
+  </div>
+
+  <footer>
+    戦略の全体像は <a href="https://claude.ai/code/artifact/371a7c58-c6b4-4da7-bd94-afffcd36e5a2">岩崎の営業作戦書</a>。<br>
+    チェックした内容はこの端末に保存され、共有が有効なときはサーバーにも保存される。
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var TASKS = [
+    {g:"c", id:"c1", t:"会社の所在地・電話・メールを決めて Claude に伝える", s:"メールのフッターに必須。全部の栓になっている"},
+    {g:"c", id:"c2", t:"スプレッドシート「CORLY OS」を作る", s:"docs/setup-phase0.md の手順。Apps Script を1回実行"},
+    {g:"c", id:"c3", t:"事業譲渡契約書の競業避止・秘密保持・代表者個人の条項を読む", s:"岩崎個人が営業を続けられるかがここで決まる"},
+    {g:"c", id:"c4", t:"上記を弁護士に確認する", s:"10/1 の前に"},
+    {g:"c", id:"c5", t:"庄栄興産と LIOAS から、業務内容・報酬の計算方法・支払期日・名乗り方をメールでもらう", s:"フリーランス新法では発注者側の義務。書面化しないならこれが最低線"},
+
+    {g:"r", id:"r1", t:"庄栄興産と価格を決める", s:"立会代行の単価・工事単価表・保証期間・流れの日数。仮置きで先に進めてよい"},
+    {g:"r", id:"r2", t:"福源屋と役割と取り分を決める", s:"現調までか、工事手配も持つか。工事粗利を岩崎とどう分けるか"},
+    {g:"r", id:"r3", t:"21社の電話番号を埋める", s:"URLのある14社は会社概要ページから。下のリストで管理"},
+    {g:"r", id:"r4", t:"紹介を頼める相手を10人書き出す", s:"取引先・オーナー・工務店・仲介店。紹介が一番強い入口"},
+    {g:"r", id:"r5", t:"自社管理物件1室で、立会報告と完了報告の見本を撮る", s:"実績が少ない段階はこれが提案書の主役になる"},
+
+    {g:"f", id:"f1", t:"灯油・重油の対応エリアを LIOAS に確認する", s:"エリア外で受けないため。当面は軽油だけで提案する"},
+    {g:"f", id:"f2", t:"配送業者の既存顧客の確認方法を決める", s:"除外リストをもらうか、都度照会か。決まるまで新規接触しない"},
+    {g:"f", id:"f3", t:"候補42社から、自社の中間処理工場を持つ産廃業者を10社選ぶ", s:"重機が毎日同じ場所で動くので数量が読め、巡回を組める"},
+    {g:"f", id:"f4", t:"いまの顧客の月間数量を一覧にする", s:"月3〜5万円の内訳。6件まであと何件かが見える"}
+  ];
+
+  var GROUPS = {c:"共通・土台", r:"原状回復", f:"燃料"};
+
+  var PROSPECTS = [
+    {id:"p01", n:"平山住研（株）", c:"豊中", u:"https://www.hirajyu.co.jp"},
+    {id:"p02", n:"生和アメニティ（株）", c:"豊中", u:"https://www.seiwa-amenity.jp"},
+    {id:"p03", n:"（株）恒和殖産", c:"豊中", u:"https://apamanshop.info"},
+    {id:"p04", n:"（株）ＥＡＳＴコーポレーション", c:"豊中", u:"https://www.east-net.jp"},
+    {id:"p05", n:"服部ライフサポート（株）", c:"豊中", u:""},
+    {id:"p06", n:"（株）三共ハウステック", c:"豊中", u:""},
+    {id:"p07", n:"パナソニックホームズグループ", c:"豊中", u:""},
+    {id:"p08", n:"（株）アイ・ディー・シー", c:"吹田", u:"https://www.id-com.co.jp"},
+    {id:"p09", n:"ユニヴ・ライフ（株）", c:"吹田", u:"https://www.univlife.co.jp"},
+    {id:"p10", n:"エーピーエム（株）", c:"吹田", u:"https://www.apm01.jp"},
+    {id:"p11", n:"（株）ストライド", c:"吹田", u:"https://stride-inc.jp"},
+    {id:"p12", n:"（株）ベストサービス", c:"吹田", u:"https://www.best-service.info"},
+    {id:"p13", n:"（株）ライフ不動産", c:"吹田", u:"https://www.life-kanri.co.jp"},
+    {id:"p14", n:"Ｋｅｙ Ｅｎｔｒａｎｃｅ（株）", c:"吹田", u:"https://keyentrance.com"},
+    {id:"p15", n:"（株）ＳＫ不動産", c:"吹田", u:"https://www.e-net.or.jp"},
+    {id:"p16", n:"（株）大阪ガスファシリティーズ", c:"吹田", u:"https://www.ogfa.co.jp"},
+    {id:"p17", n:"でゅお不動産（株）", c:"吹田", u:""},
+    {id:"p18", n:"旭中央（株）", c:"吹田", u:""},
+    {id:"p19", n:"（株）サンキ", c:"吹田", u:""},
+    {id:"p20", n:"（株）エルプラス", c:"吹田", u:""},
+    {id:"p21", n:"（株）成都管理サービス", c:"池田", u:"https://www.seito-kanri-service.com"}
+  ];
+
+  var STATUS = ["未着手","TEL取得","接触","返信あり","商談","提案","受注","見送り"];
+
+  var SCRIPTS = [
+    {id:"s1", t:"管理会社への初回メール", body:
+"件名: 退去立会〜原状回復〜清掃の一括対応のご案内（豊中・管理会社 庄栄興産）\n\n" +
+"{会社名} {部署名} {担当者名} 様\n\n" +
+"はじめてご連絡いたします。豊中市で賃貸管理を行っております庄栄興産の岩崎と申します。\n" +
+"{会社名} 様の {Webサイトで見た管理エリア・物件種別} を拝見し、ご連絡いたしました。\n\n" +
+"当社は自社の管理物件で行っている「退去立会 → 原状回復工事 → 空室清掃 → 完了確認」を、\n" +
+"同業の管理会社様向けにまとめてお預かりしております。\n" +
+"立会は国土交通省のガイドラインに沿って写真と負担区分をその場で記録し、\n" +
+"オーナー様にそのまま提出できる形で報告いたします。\n\n" +
+"「立会だけ」「繁忙期の一部だけ」からでもお受けしています。\n" +
+"一度、{会社名} 様の退去時の流れをお聞かせいただけないでしょうか。\n" +
+"{候補日1} / {候補日2} のいずれか、または {会社名} 様のご都合の良い日時で伺います。\n\n" +
+"庄栄興産 岩崎\n" +
+"所在地：{会社所在地}\n" +
+"電話：{電話番号}　メール：{メールアドレス}\n" +
+"※本メールの配信停止をご希望の場合は、本メールにその旨ご返信ください。以後お送りしません。"},
+
+    {id:"s2", t:"訪問・電話の30秒トーク", body:
+"豊中で賃貸管理をしている庄栄興産の岩崎です。\n" +
+"うちも管理会社なので、退去の立会と、その後の工事・清掃を自分たちで回しているのですが、\n" +
+"同じことを {地域} の管理会社さんの分もお預かりしています。\n" +
+"立会に写真と負担区分をつけて、オーナーさんにそのまま出せる報告にしているのが特徴です。\n" +
+"今、立会や工事の手配で一番手間になっていることはどこですか？\n\n" +
+"── 聞く順 ──\n" +
+"1. 月の退去件数はどれくらいですか\n" +
+"2. 立会は誰が出ていますか\n" +
+"3. 工事と清掃は何社に分けていますか\n" +
+"4. 一番手間になっているのはどこですか\n\n" +
+"── 出口 ──\n" +
+"「次の退去1件、立会だけ試しにお預かりします」＋ 名刺 ＋ 提案書は後日メール"},
+
+    {id:"s3", t:"紹介依頼（取引先・オーナー・工務店へ）", body:
+"{相手の名前} さん、ひとつお願いがあります。\n" +
+"退去の立会から工事・清掃までを、管理会社さんの代わりにまとめて預かる仕事を始めました。\n" +
+"「立会の人手が足りない」「業者を分けていて空室が延びる」と言っている管理会社さんをご存じでしたら、\n" +
+"一社だけご紹介いただけませんか。\n" +
+"ご紹介いただいた先には、{相手の名前} さんのお名前を出してよいですか？"},
+
+    {id:"s4", t:"燃料（配達給油）の初回メール", body:
+"件名: 現場・車庫への軽油の配達給油のご案内\n\n" +
+"{会社名} {部署名} {担当者名} 様\n\n" +
+"はじめてご連絡いたします。燃料販売代理店 LIOAS の岩崎と申します。\n\n" +
+"{会社名} 様の {地域} での {重機 / トラック / ダンプ / クレーン} の稼働を拝見し、ご連絡いたしました。\n" +
+"私どもは、給油所まで出向かずに済むよう、タンクローリーが現場・車庫へ伺って\n" +
+"直接給油する配達給油のご案内をしております。\n\n" +
+"ご契約は元売系の販売業者であるモリカワ商事様と {会社名} 様の間で結んでいただき、\n" +
+"日々の窓口は私どもが担当いたします。配送は配送業者が行います。\n\n" +
+"現在の軽油の月間ご使用量と、給油の手間についてお聞かせいただけないでしょうか。\n" +
+"条件が合えばお見積りをお出しいたします。\n\n" +
+"LIOAS 岩崎\n" +
+"電話：{電話番号}　メール：{メールアドレス}\n" +
+"※本メールの配信停止をご希望の場合は、本メールにその旨ご返信ください。以後お送りしません。\n\n" +
+"── 送る前に ──\n" +
+"・配送業者の既存顧客でないか確認した\n" +
+"・価格を1円も書いていない\n" +
+"・灯油と重油に触れていない（エリア限定のため軽油で提案）"}
+  ];
+
+  // ── state ────────────────────────────────────────────────
+  var LS = "corly_board_v1";
+  var state = {tasks:{}, prospects:{}};
+  var db = null, docRef = null, filterTodo = false;
+
+  function loadLocal(){
+    try{
+      var raw = localStorage.getItem(LS);
+      if(raw){ var o = JSON.parse(raw); state.tasks = o.tasks || {}; state.prospects = o.prospects || {}; }
+    }catch(e){}
+  }
+  function saveLocal(){
+    try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){}
+  }
+  function save(){
+    saveLocal();
+    if(docRef){ docRef.set({tasks:state.tasks, prospects:state.prospects, updatedAt:new Date().toISOString()}).catch(function(){}); }
+  }
+
+  // ── render ───────────────────────────────────────────────
+  var elTasks = document.getElementById("tasks");
+  var elPros  = document.getElementById("prospects");
+  var elScr   = document.getElementById("scripts");
+
+  function renderTasks(){
+    elTasks.textContent = "";
+    ["c","r","f"].forEach(function(g){
+      var h = document.createElement("h3");
+      h.className = g; h.textContent = GROUPS[g];
+      elTasks.appendChild(h);
+      TASKS.filter(function(t){ return t.g === g; }).forEach(function(t){
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "t"; b.id = "t-" + t.id;
+        b.setAttribute("aria-pressed", state.tasks[t.id] ? "true" : "false");
+        var box = document.createElement("span"); box.className = "box"; box.textContent = "✓";
+        var tx = document.createElement("span"); tx.className = "txt";
+        tx.appendChild(document.createTextNode(t.t));
+        var em = document.createElement("em"); em.textContent = t.s; tx.appendChild(em);
+        b.appendChild(box); b.appendChild(tx);
+        b.addEventListener("click", function(){
+          state.tasks[t.id] = !state.tasks[t.id];
+          b.setAttribute("aria-pressed", state.tasks[t.id] ? "true" : "false");
+          save(); renderProgress();
+        });
+        elTasks.appendChild(b);
+      });
+    });
+  }
+
+  function renderProgress(){
+    var done = TASKS.filter(function(t){ return state.tasks[t.id]; }).length;
+    document.getElementById("pdone").textContent = done;
+    document.getElementById("ptotal").textContent = TASKS.length;
+    document.getElementById("pbar").style.width = Math.round(done / TASKS.length * 100) + "%";
+    var nx = TASKS.find(function(t){ return !state.tasks[t.id]; });
+    document.getElementById("nextv").textContent = nx ? nx.t : "今週のタスクは全部終わり";
+    document.getElementById("nexts").textContent = nx ? nx.s : "次の週の分を Claude に出させる";
+  }
+
+  function renderProspects(){
+    elPros.textContent = "";
+    var shown = 0;
+    PROSPECTS.forEach(function(p){
+      var st = state.prospects[p.id] || "未着手";
+      if(filterTodo && st !== "未着手") return;
+      shown++;
+      var row = document.createElement("div");
+      row.className = "p" + (st === "受注" || st === "見送り" ? " done" : "");
+      var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = p.n;
+      var sub = document.createElement("div"); sub.className = "sub";
+      var city = document.createElement("span"); city.className = "city"; city.textContent = p.c;
+      sub.appendChild(city);
+      if(p.u){
+        var a = document.createElement("a");
+        a.href = p.u; a.target = "_blank"; a.rel = "noopener noreferrer"; a.textContent = "サイトを開く";
+        sub.appendChild(a);
+      }else{
+        var no = document.createElement("span"); no.textContent = "サイト未確認"; sub.appendChild(no);
+      }
+      var sel = document.createElement("select");
+      sel.id = "sel-" + p.id;
+      sel.setAttribute("aria-label", p.n + " の状況");
+      STATUS.forEach(function(s){
+        var o = document.createElement("option"); o.value = s; o.textContent = s;
+        if(s === st) o.selected = true;
+        sel.appendChild(o);
+      });
+      sel.addEventListener("change", function(){
+        state.prospects[p.id] = sel.value; save(); renderProspects();
+      });
+      row.appendChild(nm); row.appendChild(sel); row.appendChild(sub);
+      elPros.appendChild(row);
+    });
+    var touched = PROSPECTS.filter(function(p){ return state.prospects[p.id] && state.prospects[p.id] !== "未着手"; }).length;
+    document.getElementById("pcount").textContent = "着手 " + touched + " / " + PROSPECTS.length + "　表示 " + shown;
+  }
+
+  function renderScripts(){
+    elScr.textContent = "";
+    SCRIPTS.forEach(function(s){
+      var d = document.createElement("details");
+      var sm = document.createElement("summary"); sm.textContent = s.t;
+      var bd = document.createElement("div"); bd.className = "body";
+      var ta = document.createElement("textarea"); ta.id = "ta-" + s.id; ta.value = s.body;
+      ta.setAttribute("aria-label", s.t);
+      var btn = document.createElement("button"); btn.type = "button"; btn.className = "btn"; btn.textContent = "コピー";
+      btn.addEventListener("click", function(){
+        ta.focus(); ta.select();
+        var ok = false;
+        try{ ok = document.execCommand("copy"); }catch(e){}
+        if(ok){ btn.textContent = "コピーした"; }
+        else if(navigator.clipboard){
+          navigator.clipboard.writeText(ta.value).then(function(){ btn.textContent = "コピーした"; })
+            .catch(function(){ btn.textContent = "選択した。長押しでコピー"; });
+        }else{ btn.textContent = "選択した。長押しでコピー"; }
+        setTimeout(function(){ btn.textContent = "コピー"; }, 2400);
+      });
+      bd.appendChild(ta); bd.appendChild(btn);
+      d.appendChild(sm); d.appendChild(bd);
+      elScr.appendChild(d);
+    });
+  }
+
+  // ── filters ──────────────────────────────────────────────
+  var fAll = document.getElementById("f-all"), fTodo = document.getElementById("f-todo");
+  function setFilter(v){
+    filterTodo = v;
+    fAll.setAttribute("aria-pressed", v ? "false" : "true");
+    fTodo.setAttribute("aria-pressed", v ? "true" : "false");
+    renderProspects();
+  }
+  fAll.addEventListener("click", function(){ setFilter(false); });
+  fTodo.addEventListener("click", function(){ setFilter(true); });
+
+  // ── boot ─────────────────────────────────────────────────
+  loadLocal();
+  renderTasks(); renderProgress(); renderProspects(); renderScripts();
+
+  var ss = document.getElementById("savestate");
+  ss.textContent = "この端末に保存";
+
+  if(window.claude && typeof window.claude.use === "function"){
+    window.claude.use("db").then(function(d){
+      if(!d) return;
+      db = d;
+      docRef = db.doc("board/w1");
+      docRef.onSnapshot(function(snap){
+        if(snap && snap.exists){
+          var v = snap.data() || {};
+          if(v.tasks) state.tasks = v.tasks;
+          if(v.prospects) state.prospects = v.prospects;
+          saveLocal();
+          renderTasks(); renderProgress(); renderProspects();
+        }else{
+          docRef.set({tasks:state.tasks, prospects:state.prospects, updatedAt:new Date().toISOString()}).catch(function(){});
+        }
+        ss.textContent = "共有して保存";
+      }, function(){ ss.textContent = "この端末に保存"; });
+    }).catch(function(){});
+  }
+})();
+</script>
