@@ -78,7 +78,7 @@
     margin:0; font-family:var(--body); font-size:10.5px; letter-spacing:.14em; font-weight:700;
     padding:14px 0 6px;
   }
-  .grp h3.r{color:var(--blue)} .grp h3.f{color:var(--ochre)} .grp h3.c{color:var(--ink-3)}
+  .grp h3.r{color:var(--blue)} .grp h3.f{color:var(--ochre)} .grp h3.c{color:var(--ink-3)} .grp h3.cl{color:var(--green)}
   .t{
     display:flex; gap:11px; align-items:flex-start; padding:10px 12px;
     background:var(--surface); border:1px solid var(--line); margin-bottom:-1px;
@@ -149,7 +149,7 @@
     <h1>今週の営業ボード</h1>
     <div class="meta">
       <span><b>60日</b> 9/12 〜 11/10</span>
-      <span><b>今週の的</b> 動ける状態を作る</span>
+      <span><b>今週の的</b> 動ける状態を作る ＋ 清掃で1件受ける</span>
       <span class="savestate" id="savestate">保存先を確認中</span>
     </div>
   </header>
@@ -192,7 +192,7 @@
   </div>
 
   <footer>
-    戦略の全体像は <a href="https://claude.ai/code/artifact/371a7c58-c6b4-4da7-bd94-afffcd36e5a2">岩崎の営業作戦書</a>。<br>
+    戦略の全体像は <a href="https://claude.ai/code/artifact/371a7c58-c6b4-4da7-bd94-afffcd36e5a2">岩崎の営業作戦書</a>（原状回復・清掃・配達給油の三本）。<br>
     チェックした内容はこの端末に保存され、共有が有効なときはサーバーにも保存される。
   </footer>
 
@@ -209,6 +209,11 @@
     {g:"c", id:"c4", t:"上記を弁護士に確認する", s:"10/1 の前に"},
     {g:"c", id:"c5", t:"庄栄興産と LIOAS から、業務内容・報酬の計算方法・支払期日・名乗り方をメールでもらう", s:"フリーランス新法では発注者側の義務。書面化しないならこれが最低線"},
 
+    {g:"cl", id:"cl1", t:"大槻の空き稼働を確認する", s:"月に何室まで受けられるか。埋まっているなら量を増やす営業はしない"},
+    {g:"cl", id:"cl2", t:"いまの30〜50室の、直請けと下請けの内訳を出す", s:"入れ替えの余地が見える。下請け9,000円→直請け13,000円で1室4,000円増える"},
+    {g:"cl", id:"cl3", t:"同業の清掃業者2社に、繁忙期の溢れ分を受けられると伝える", s:"空きがあるときの埋め方。関係作りにもなる"},
+    {g:"cl", id:"cl4", t:"清掃で受けたあとの「次の一言」を決めて覚える", s:"「次の退去のときは、立会からお預かりすることもできます」"},
+
     {g:"r", id:"r1", t:"庄栄興産と価格を決める", s:"立会代行の単価・工事単価表・保証期間・流れの日数。仮置きで先に進めてよい"},
     {g:"r", id:"r2", t:"福源屋と役割と取り分を決める", s:"現調までか、工事手配も持つか。工事粗利を岩崎とどう分けるか"},
     {g:"r", id:"r3", t:"21社の電話番号を埋める", s:"URLのある14社は会社概要ページから。下のリストで管理"},
@@ -221,7 +226,7 @@
     {g:"f", id:"f4", t:"いまの顧客の月間数量を一覧にする", s:"月3〜5万円の内訳。6件まであと何件かが見える"}
   ];
 
-  var GROUPS = {c:"共通・土台", r:"原状回復", f:"燃料"};
+  var GROUPS = {c:"共通・土台", cl:"清掃（今日から売れる）", r:"原状回復", f:"燃料"};
 
   var PROSPECTS = [
     {id:"p01", n:"平山住研（株）", c:"豊中", u:"https://www.hirajyu.co.jp"},
@@ -281,6 +286,19 @@
 "── 出口 ──\n" +
 "「次の退去1件、立会だけ試しにお預かりします」＋ 名刺 ＋ 提案書は後日メール"},
 
+    {id:"s5", t:"清掃だけで受けるとき", body:
+"── 出す価格（価格表にあるものだけ）──\n" +
+"管理会社 直請け：1K美装 13,000円／エアコン分解洗浄 9,000円\n" +
+"工事業者の下請け：1K美装 8,000〜9,000円／エアコン 4,000〜4,500円\n" +
+"※すべて税別。これ以外の金額は口にしない。\n\n" +
+"── 受ける前に ──\n" +
+"大槻の空きを確認する。埋まっているのに受けて外注に振ると、粗利は5%しか残らない。\n\n" +
+"── 受けたら必ず言う ──\n" +
+"「ありがとうございます。次の退去のときは、立会からお預かりすることもできます。\n" +
+"　写真つきの負担区分表をお出しするので、オーナー様への説明もそのまま使えます。」\n\n" +
+"── 納品したら ──\n" +
+"完了報告に写真をつけて出す。それがそのまま次の提案書の実績になる。"},
+
     {id:"s3", t:"紹介依頼（取引先・オーナー・工務店へ）", body:
 "{相手の名前} さん、ひとつお願いがあります。\n" +
 "退去の立会から工事・清掃までを、管理会社さんの代わりにまとめて預かる仕事を始めました。\n" +
@@ -334,7 +352,7 @@
 
   function renderTasks(){
     elTasks.textContent = "";
-    ["c","r","f"].forEach(function(g){
+    ["c","cl","r","f"].forEach(function(g){
       var h = document.createElement("h3");
       h.className = g; h.textContent = GROUPS[g];
       elTasks.appendChild(h);

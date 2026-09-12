@@ -9,6 +9,7 @@
     --blue:#1F5C8B; --blue-soft:#E2EBF3; --blue-line:#B8CCDD;
     --ochre:#8F6310; --ochre-soft:#F4ECDA; --ochre-line:#DFCC9F;
     --shu:#A93226; --shu-soft:#F6E5E2; --shu-line:#E0BDB7;
+    --green:#2E6B4F; --green-soft:#E2EFE8; --green-line:#B4D4C3;
     --display:"Shippori Mincho B1",'Hiragino Mincho ProN',"Yu Mincho",serif;
     --body:"Noto Sans JP",'Hiragino Sans',"Yu Gothic",system-ui,sans-serif;
     --mono:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
@@ -20,6 +21,7 @@
       --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
       --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
       --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+      --green:#6FBE96; --green-soft:#17301F; --green-line:#2C4E3B;
     }
   }
   :root[data-theme="dark"]{
@@ -28,6 +30,7 @@
     --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
     --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
     --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+    --green:#6FBE96; --green-soft:#17301F; --green-line:#2C4E3B;
   }
 
   *{box-sizing:border-box}
@@ -37,7 +40,7 @@
     -webkit-font-smoothing:antialiased;
     padding-inline:16px; padding-block:0;
   }
-  .wrap{max-width:740px; margin:0 auto; padding-block:36px 64px; display:flex; flex-direction:column; gap:40px}
+  .wrap{max-width:880px; margin:0 auto; padding-block:36px 64px; display:flex; flex-direction:column; gap:40px}
 
   h1,h2,h3{font-family:var(--display); font-weight:700; text-wrap:balance; margin:0; line-height:1.35}
   h1{font-size:clamp(26px,6.2vw,36px); letter-spacing:.02em}
@@ -76,8 +79,8 @@
   .rule .no{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
 
   /* ── pillars ── */
-  .pillars{display:grid; grid-template-columns:1fr 1fr; gap:16px}
-  @media (max-width:640px){ .pillars{grid-template-columns:1fr} }
+  .pillars{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+  @media (max-width:860px){ .pillars{grid-template-columns:1fr} }
   .pillar{
     background:var(--surface); border:1px solid var(--line);
     border-top:3px solid var(--accent); padding:20px 18px;
@@ -85,6 +88,7 @@
   }
   .pillar.a{--accent:var(--blue); --tint:var(--blue-soft); --tline:var(--blue-line)}
   .pillar.b{--accent:var(--ochre); --tint:var(--ochre-soft); --tline:var(--ochre-line)}
+  .pillar.c{--accent:var(--green); --tint:var(--green-soft); --tline:var(--green-line)}
   .pillar h2{color:var(--accent)}
   .pillar .who{font-size:12px; color:var(--ink-3); margin-top:-8px}
   .chain{display:flex; flex-wrap:wrap; align-items:center; gap:5px; font-size:11.5px}
@@ -142,6 +146,7 @@
   .task .line.r::before{color:var(--blue)}
   .task .line.f::before{color:var(--ochre)}
   .task .line.c::before{color:var(--ink-3)}
+  .task .line.cl::before{color:var(--green)}
 
   /* ── never / risk ── */
   .never{background:var(--shu-soft); border:1px solid var(--shu-line); padding:18px; display:flex; flex-direction:column; gap:10px}
@@ -193,11 +198,11 @@
   <p class="lede">
     岩崎の事業は <strong>営業代行</strong> になる。委託元は2社。庄栄興産（原状回復の一気通貫）と LIOAS（配達給油）。
     どちらも共通しているのは、<strong>営業機能を持たない事業者の売上を、営業で作る</strong>こと。
-    売る商材は違っても、やっていることは1つ。
+    売る商材は違っても、やっていることは1つ。<br>清掃は取り分がゼロでも売る。<strong>今日から売れて、次の仕事の入口になる</strong>から。
   </p>
 
   <section>
-    <div class="rule"><h2>二本柱</h2><span class="no">性格が違うので、役割も分ける</span></div>
+    <div class="rule"><h2>三本の商品</h2><span class="no">性格が違うので、役割も分ける</span></div>
     <div class="pillars">
 
       <article class="pillar a">
@@ -227,6 +232,30 @@
 
           <dt>取り分</dt>
           <dd>工事の粗利から。清掃からは取らない。率は未登録（<b>2分の1以上で交渉</b>）。</dd>
+        </dl>
+      </article>
+
+      <article class="pillar c">
+        <h2>清掃</h2>
+        <p class="who">今日から売れる唯一の商品。岩崎の取り分はゼロ。</p>
+        <div class="chain">
+          <span>管理会社</span><i>／</i><span>工事業者</span><i>→</i><span>大槻（清掃）</span>
+        </div>
+        <dl>
+          <dt>なぜ売るか</dt>
+          <dd>粗利は取らない。それでも売る理由は3つ。①大槻の稼働が埋まれば清掃事業に利益が残り、分配の余地が出る ②清掃で入って立会・工事に広げる入口になる ③価格表も実績も納品体制もあり、<b>今日から売れる</b>。</dd>
+
+          <dt>単価</dt>
+          <dd>管理会社 直請け：1K美装 <span class="num">13,000円</span>／エアコン <span class="num">9,000円</span>。<br>工事業者の下請け：1K美装 <span class="num">8,000〜9,000円</span>／エアコン <span class="num">4,000〜4,500円</span>（実績値）。</dd>
+
+          <dt>先に確認すること</dt>
+          <dd>大槻の空き稼働。月30〜50室 × 3〜5時間で、1人ならほぼ埋まっている可能性が高い（仮置き）。<b>空きがないのに取ると外注に振るしかなく、粗利は5%しか残らない</b>（実績値）。</dd>
+
+          <dt>空きがないときの手</dt>
+          <dd>量を増やさず <b>入れ替える</b>。下請け9,000円を直請け13,000円にすると、同じ手間で1室4,000円増える。40室なら月16万円（仮置き）。</dd>
+
+          <dt>売ったあとの一言</dt>
+          <dd>「次の退去のときは、立会からお預かりすることもできます」。清掃単体で終わらせない。</dd>
         </dl>
       </article>
 
@@ -308,7 +337,7 @@
       <p class="note">
         1K工事の受注8.5万円・元請け粗利30%という参考値からの試算。<b>出典の本文は未確認、すべて仮置き</b>。
         含意は3つ。<b>分配率を2分の1以上で交渉する</b>。<b>立会代行の売上を岩崎側に多く配分する</b>。<b>燃料の大口を6件積む</b>。
-        この3つが揃わないと50万円には届かない。原状回復だけで届かせようとすると、管理会社が12〜15社必要になる。
+        この3つが揃わないと50万円には届かない。原状回復だけで届かせようとすると、管理会社が12〜15社必要になる。<br>清掃はこの表に入っていない。<b>岩崎が粗利を取らないから</b>。清掃が効くのは、大槻の稼働が埋まって清掃事業に利益が残り、分配の余地が出たときと、立会・工事へ広げる入口としてだけ。
       </p>
 
     </div>
@@ -322,6 +351,7 @@
         <div class="task">
           <div class="line r" data-k="原状回復">譲渡契約の競業避止・秘密保持を弁護士に確認。庄栄興産と価格を決める（立会単価・工事単価表・保証期間・日数）。仮置きで先に進めてよい。</div>
           <div class="line f" data-k="燃料">灯油・重油の対応エリアを確認。配送業者の既存顧客の確認方法を決める。産廃業者から候補を広げる。</div>
+          <div class="line cl" data-k="清掃">大槻の空き稼働を確認する。いまの30〜50室の直請け／下請けの内訳を出す。空きがなければ、量ではなく単価の入れ替えを狙う。</div>
           <div class="line c" data-k="共通">会社の所在地・電話・メールを登録。これがないとメールが1通も出せない。スプレッドシートを作る。</div>
         </div>
       </li>
@@ -330,6 +360,7 @@
         <div class="task">
           <div class="line r" data-k="原状回復">提案書 v1。高優先21社のサイトから電話番号を埋める。初回接触を開始（1日2〜3通）。<b>10/1 譲渡実行。</b></div>
           <div class="line f" data-k="燃料">大口候補へ初回接触を開始。</div>
+          <div class="line cl" data-k="清掃">21社への接触に「清掃だけでも」を必ず添える。同業2社に繁忙期の溢れ分を受けられると伝える。</div>
           <div class="line c" data-k="共通">朝1通の通知（LINE）を動かす。承認の型を回す。</div>
         </div>
       </li>
@@ -356,7 +387,8 @@
   <div class="never">
     <h2>やらないこと</h2>
     <ul>
-      <li>清掃単体の飛び込み。管理会社の「清掃業者リスト」に入るだけの営業</li>
+      <li>清掃<b>単体で終わる</b>営業。受けたら必ず立会・工事へ広げる一言を足す</li>
+      <li>大槻の空きを確かめずに受けて、外注に振る（粗利が5%しか残らない）</li>
       <li>1日200件のテレアポ、FAX一斉送信、地図サービスからの機械的なリスト作成</li>
       <li>出所が説明できないリストの使用（カミックスのリストは使わない）</li>
       <li>配送業者の既存顧客への営業</li>
