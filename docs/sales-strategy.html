@@ -40,7 +40,7 @@
     -webkit-font-smoothing:antialiased;
     padding-inline:16px; padding-block:0;
   }
-  .wrap{max-width:880px; margin:0 auto; padding-block:36px 64px; display:flex; flex-direction:column; gap:40px}
+  .wrap{max-width:800px; margin:0 auto; padding-block:36px 64px; display:flex; flex-direction:column; gap:40px}
 
   h1,h2,h3{font-family:var(--display); font-weight:700; text-wrap:balance; margin:0; line-height:1.35}
   h1{font-size:clamp(26px,6.2vw,36px); letter-spacing:.02em}
@@ -79,8 +79,8 @@
   .rule .no{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
 
   /* ── pillars ── */
-  .pillars{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
-  @media (max-width:860px){ .pillars{grid-template-columns:1fr} }
+  .pillars{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:720px){ .pillars{grid-template-columns:1fr} }
   .pillar{
     background:var(--surface); border:1px solid var(--line);
     border-top:3px solid var(--accent); padding:20px 18px;
@@ -98,6 +98,13 @@
   .pillar dt{font-size:11px; letter-spacing:.1em; color:var(--ink-3); font-weight:700}
   .pillar dd{margin:0; font-size:13.5px; line-height:1.7}
   .pillar dd .num{font-size:13px}
+  .step{display:grid; grid-template-columns:20px 1fr; gap:8px; margin-bottom:7px}
+  .step:last-child{margin-bottom:0}
+  .step b{
+    font-family:var(--mono); font-size:11px; font-weight:500; color:var(--accent);
+    border:1px solid var(--tline); background:var(--tint); height:19px;
+    display:grid; place-items:center;
+  }
   .tags{display:flex; flex-wrap:wrap; gap:5px}
   .tag{font-size:11.5px; border:1px solid var(--line); padding:2px 7px; color:var(--ink-2)}
   .tag.hot{border-color:var(--accent); color:var(--accent); font-weight:500}
@@ -198,16 +205,16 @@
   <p class="lede">
     岩崎の事業は <strong>営業代行</strong> になる。委託元は2社。庄栄興産（原状回復の一気通貫）と LIOAS（配達給油）。
     どちらも共通しているのは、<strong>営業機能を持たない事業者の売上を、営業で作る</strong>こと。
-    売る商材は違っても、やっていることは1つ。<br>清掃は取り分がゼロでも売る。<strong>今日から売れて、次の仕事の入口になる</strong>から。
+    売る商材は違っても、やっていることは1つ。<br>清掃は管理会社への営業の一部。取り分はゼロでも売る。<strong>今日から売れて、次の仕事の入口になる</strong>から。
   </p>
 
   <section>
-    <div class="rule"><h2>三本の商品</h2><span class="no">性格が違うので、役割も分ける</span></div>
+    <div class="rule"><h2>二つの相手</h2><span class="no">清掃も原状回復も、行き先は管理会社</span></div>
     <div class="pillars">
 
       <article class="pillar a">
-        <h2>原状回復 一気通貫</h2>
-        <p class="who">庄栄興産の名前で営業。単価を上げる柱。</p>
+        <h2>管理会社</h2>
+        <p class="who">庄栄興産の名前で営業。清掃も原状回復も、相手は同じ。</p>
         <div class="chain">
           <span>管理会社</span><i>→</i><span>岩崎＋福源屋</span><i>→</i><span>工務店</span><i>＋</i><span>大槻（清掃）</span>
         </div>
@@ -215,47 +222,30 @@
           <dt>勝ち筋</dt>
           <dd>同業（管理会社）が出す提案。「管理会社の立会を、管理会社が代行する」。工事業者と同じ単価勝負の土俵に乗らない。</dd>
 
-          <dt>商品</dt>
-          <dd>退去立会（<b>有料</b>）→ 原状回復工事 → 空室清掃 → 完了確認。立会は入口商品にもなる。</dd>
+          <dt>受注の階段</dt>
+          <dd>
+            <span class="step"><b>1</b>清掃だけ — 1K美装 <span class="num">13,000円</span>／エアコン <span class="num">9,000円</span>（直請けの実績値）。<b>今日から売れる</b>。</span>
+            <span class="step"><b>2</b>清掃＋立会 — 立会代行は有料。工事の話に入る足がかりになる。</span>
+            <span class="step"><b>3</b>一気通貫 — 立会 → 工事 → 清掃 → 完了確認。ここで工事の粗利が乗る。</span>
+          </dd>
+
+          <dt>広げ方</dt>
+          <dd>清掃で1室受けたら必ず言う。「次の退去のときは、立会からお預かりすることもできます」。<b>清掃単体で終わらせない。</b> 完了報告の写真が、そのまま次の提案書の実績になる。</dd>
 
           <dt>単価が上がる理由</dt>
-          <dd>下請けの1K美装 <span class="num">9,000円</span> に対し、管理会社直請けは <span class="num">13,000円</span>（実績値）。1次請けに入れば1Kでも上がる。</dd>
+          <dd>下請けの1K美装 <span class="num">9,000円</span> に対し、直請けは <span class="num">13,000円</span>（実績値）。1次請けに入れば1Kでも上がる。稼働が埋まっているときは、量を増やさず <b>安い下請けを直請けに入れ替える</b>。同じ手間で1室4,000円増える。</dd>
 
           <dt>ターゲット</dt>
-          <dd>大阪の管理会社 <span class="num">204社</span>（日管協名簿ほか）。</dd>
+          <dd>大阪の管理会社 <span class="num">204社</span>（日管協名簿ほか）。清掃も一気通貫も、行き先は同じリスト。</dd>
           <dd class="tags">
             <span class="tag hot">高 21社</span><span class="tag">吹田13</span><span class="tag">豊中7</span><span class="tag">池田1</span><span class="tag">中 60社</span>
           </dd>
 
-          <dt>入り方</dt>
-          <dd>全部の切り替えは狙わない。「立会だけ」「繁忙期の溢れ分」「特定エリアだけ」で入り、結果を出して広げる。</dd>
-
           <dt>取り分</dt>
-          <dd>工事の粗利から。清掃からは取らない。率は未登録（<b>2分の1以上で交渉</b>）。</dd>
-        </dl>
-      </article>
-
-      <article class="pillar c">
-        <h2>清掃</h2>
-        <p class="who">今日から売れる唯一の商品。岩崎の取り分はゼロ。</p>
-        <div class="chain">
-          <span>管理会社</span><i>／</i><span>工事業者</span><i>→</i><span>大槻（清掃）</span>
-        </div>
-        <dl>
-          <dt>なぜ売るか</dt>
-          <dd>粗利は取らない。それでも売る理由は3つ。①大槻の稼働が埋まれば清掃事業に利益が残り、分配の余地が出る ②清掃で入って立会・工事に広げる入口になる ③価格表も実績も納品体制もあり、<b>今日から売れる</b>。</dd>
-
-          <dt>単価</dt>
-          <dd>管理会社 直請け：1K美装 <span class="num">13,000円</span>／エアコン <span class="num">9,000円</span>。<br>工事業者の下請け：1K美装 <span class="num">8,000〜9,000円</span>／エアコン <span class="num">4,000〜4,500円</span>（実績値）。</dd>
+          <dd>工事の粗利から。<b>清掃からは取らない。</b> 率は未登録（2分の1以上で交渉）。清掃が効くのは、大槻の稼働が埋まって清掃事業に利益が残り分配の余地が出たときと、工事への入口としてだけ。</dd>
 
           <dt>先に確認すること</dt>
-          <dd>大槻の空き稼働。月30〜50室 × 3〜5時間で、1人ならほぼ埋まっている可能性が高い（仮置き）。<b>空きがないのに取ると外注に振るしかなく、粗利は5%しか残らない</b>（実績値）。</dd>
-
-          <dt>空きがないときの手</dt>
-          <dd>量を増やさず <b>入れ替える</b>。下請け9,000円を直請け13,000円にすると、同じ手間で1室4,000円増える。40室なら月16万円（仮置き）。</dd>
-
-          <dt>売ったあとの一言</dt>
-          <dd>「次の退去のときは、立会からお預かりすることもできます」。清掃単体で終わらせない。</dd>
+          <dd>大槻の空き稼働。月30〜50室 × 3〜5時間で、1人ならほぼ埋まっている可能性が高い（仮置き）。<b>空きがないのに受けて外注に振ると、粗利は5%しか残らない</b>（実績値）。</dd>
         </dl>
       </article>
 
@@ -349,25 +339,23 @@
       <li>
         <div class="wk"><b>W1–2</b>9/12–9/25</div>
         <div class="task">
-          <div class="line r" data-k="原状回復">譲渡契約の競業避止・秘密保持を弁護士に確認。庄栄興産と価格を決める（立会単価・工事単価表・保証期間・日数）。仮置きで先に進めてよい。</div>
+          <div class="line r" data-k="管理会社">譲渡契約の競業避止・秘密保持を弁護士に確認。庄栄興産と価格を決める（立会単価・工事単価表・保証期間・日数）。大槻の空き稼働と、いまの30〜50室の直請け／下請けの内訳を出す。</div>
           <div class="line f" data-k="燃料">灯油・重油の対応エリアを確認。配送業者の既存顧客の確認方法を決める。産廃業者から候補を広げる。</div>
-          <div class="line cl" data-k="清掃">大槻の空き稼働を確認する。いまの30〜50室の直請け／下請けの内訳を出す。空きがなければ、量ではなく単価の入れ替えを狙う。</div>
           <div class="line c" data-k="共通">会社の所在地・電話・メールを登録。これがないとメールが1通も出せない。スプレッドシートを作る。</div>
         </div>
       </li>
       <li>
         <div class="wk"><b>W3–4</b>9/26–10/9</div>
         <div class="task">
-          <div class="line r" data-k="原状回復">提案書 v1。高優先21社のサイトから電話番号を埋める。初回接触を開始（1日2〜3通）。<b>10/1 譲渡実行。</b></div>
+          <div class="line r" data-k="管理会社">提案書 v1。高優先21社のサイトから電話番号を埋める。初回接触を開始（1日2〜3通）。文面に「清掃だけでも」を必ず添える。<b>10/1 譲渡実行。</b></div>
           <div class="line f" data-k="燃料">大口候補へ初回接触を開始。</div>
-          <div class="line cl" data-k="清掃">21社への接触に「清掃だけでも」を必ず添える。同業2社に繁忙期の溢れ分を受けられると伝える。</div>
           <div class="line c" data-k="共通">朝1通の通知（LINE）を動かす。承認の型を回す。</div>
         </div>
       </li>
       <li>
         <div class="wk"><b>W5–6</b>10/10–10/23</div>
         <div class="task">
-          <div class="line r" data-k="原状回復">商談4社。「立会だけお試し」で提案2社。自社管理物件で完了報告の見本を1室分撮る。</div>
+          <div class="line r" data-k="管理会社">商談4社。「立会だけお試し」で提案2社。自社管理物件で完了報告の見本を1室分撮る。</div>
           <div class="line f" data-k="燃料">商談3社、与信申請1件。</div>
           <div class="line c" data-k="共通">数字で振り返り。効いた文面だけをプレイブックに残す。</div>
         </div>
@@ -375,7 +363,7 @@
       <li>
         <div class="wk"><b>W7–9</b>10/24–11/10</div>
         <div class="task">
-          <div class="line r" data-k="原状回復">管理会社1社から継続発注を取る。賃貸住宅フェア大阪（11/26–27）の来場登録。</div>
+          <div class="line r" data-k="管理会社">管理会社1社から継続発注を取る。賃貸住宅フェア大阪（11/26–27）の来場登録。</div>
           <div class="line f" data-k="燃料">大口2件（合計20,000L以上）を取る。</div>
           <div class="line c" data-k="共通">接触→商談→提案の転換率を出し、次の60日を設計する。</div>
         </div>
