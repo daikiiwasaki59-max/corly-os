@@ -1,0 +1,400 @@
+<title>岩崎の営業作戦書</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@600;700&family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#EDF0F3; --surface:#FFFFFF; --surface-2:#F6F8FA;
+    --ink:#16232E; --ink-2:#46586A; --ink-3:#7C8C9B; --line:#D3DBE2;
+    --blue:#1F5C8B; --blue-soft:#E2EBF3; --blue-line:#B8CCDD;
+    --ochre:#8F6310; --ochre-soft:#F4ECDA; --ochre-line:#DFCC9F;
+    --shu:#A93226; --shu-soft:#F6E5E2; --shu-line:#E0BDB7;
+    --display:"Shippori Mincho B1",'Hiragino Mincho ProN',"Yu Mincho",serif;
+    --body:"Noto Sans JP",'Hiragino Sans',"Yu Gothic",system-ui,sans-serif;
+    --mono:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#111921; --surface:#18242F; --surface-2:#1D2B37;
+      --ink:#E7EDF3; --ink-2:#A8B9C7; --ink-3:#77899A; --line:#2B3D4C;
+      --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
+      --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
+      --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#111921; --surface:#18242F; --surface-2:#1D2B37;
+    --ink:#E7EDF3; --ink-2:#A8B9C7; --ink-3:#77899A; --line:#2B3D4C;
+    --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
+    --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
+    --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:var(--body); font-size:15px; line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    padding-inline:16px; padding-block:0;
+  }
+  .wrap{max-width:740px; margin:0 auto; padding-block:36px 64px; display:flex; flex-direction:column; gap:40px}
+
+  h1,h2,h3{font-family:var(--display); font-weight:700; text-wrap:balance; margin:0; line-height:1.35}
+  h1{font-size:clamp(26px,6.2vw,36px); letter-spacing:.02em}
+  h2{font-size:clamp(19px,4.4vw,23px)}
+  h3{font-size:16px}
+  p{margin:0}
+  .num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+
+  .eyebrow{
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:700;
+  }
+
+  /* ── header ── */
+  header{display:flex; flex-direction:column; gap:10px; border-bottom:2px solid var(--ink); padding-bottom:20px}
+  .meta{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:12px; color:var(--ink-2)}
+  .meta b{font-weight:500; color:var(--ink-3)}
+
+  /* ── goal band ── */
+  .band{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+    background:var(--line); border:1px solid var(--line);
+  }
+  .band > div{background:var(--surface); padding:16px 14px; display:flex; flex-direction:column; gap:3px}
+  .band .k{font-size:11px; letter-spacing:.12em; color:var(--ink-3); font-weight:700}
+  .band .v{font-family:var(--mono); font-size:clamp(18px,4.6vw,24px); font-weight:500; line-height:1.2}
+  .band .s{font-size:11px; color:var(--ink-3)}
+  .band .goal .v{color:var(--blue)}
+  @media (max-width:520px){ .band{grid-template-columns:1fr} }
+
+  .lede{font-size:16px; line-height:1.85}
+  .lede strong{font-weight:700; background:linear-gradient(transparent 62%, var(--blue-soft) 62%)}
+
+  section{display:flex; flex-direction:column; gap:16px}
+  .rule{display:flex; align-items:baseline; gap:12px; border-bottom:1px solid var(--line); padding-bottom:8px}
+  .rule .no{font-family:var(--mono); font-size:12px; color:var(--ink-3)}
+
+  /* ── pillars ── */
+  .pillars{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:640px){ .pillars{grid-template-columns:1fr} }
+  .pillar{
+    background:var(--surface); border:1px solid var(--line);
+    border-top:3px solid var(--accent); padding:20px 18px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .pillar.a{--accent:var(--blue); --tint:var(--blue-soft); --tline:var(--blue-line)}
+  .pillar.b{--accent:var(--ochre); --tint:var(--ochre-soft); --tline:var(--ochre-line)}
+  .pillar h2{color:var(--accent)}
+  .pillar .who{font-size:12px; color:var(--ink-3); margin-top:-8px}
+  .chain{display:flex; flex-wrap:wrap; align-items:center; gap:5px; font-size:11.5px}
+  .chain span{background:var(--tint); border:1px solid var(--tline); padding:3px 8px; white-space:nowrap}
+  .chain i{color:var(--ink-3); font-style:normal}
+  .pillar dl{margin:0; display:flex; flex-direction:column; gap:11px}
+  .pillar dt{font-size:11px; letter-spacing:.1em; color:var(--ink-3); font-weight:700}
+  .pillar dd{margin:0; font-size:13.5px; line-height:1.7}
+  .pillar dd .num{font-size:13px}
+  .tags{display:flex; flex-wrap:wrap; gap:5px}
+  .tag{font-size:11.5px; border:1px solid var(--line); padding:2px 7px; color:var(--ink-2)}
+  .tag.hot{border-color:var(--accent); color:var(--accent); font-weight:500}
+
+  /* ── composition ── */
+  .calc{background:var(--surface); border:1px solid var(--line); padding:20px 18px; display:flex; flex-direction:column; gap:18px}
+  .barwrap{display:flex; flex-direction:column; gap:7px}
+  .bar{position:relative; height:34px; background:var(--surface-2); border:1px solid var(--line); display:flex}
+  .bar .seg{height:100%; display:flex; align-items:center; justify-content:center; font-size:10.5px; color:#fff; overflow:hidden}
+  .seg.fuel{background:var(--ochre)}
+  .seg.reno{background:var(--blue)}
+  .seg.insp{background:var(--blue); opacity:.6}
+  .target{position:absolute; top:-6px; bottom:-6px; width:2px; background:var(--shu)}
+  .target::after{
+    content:"目標 50万"; position:absolute; left:5px; top:-19px;
+    font-size:10.5px; color:var(--shu); font-weight:700; white-space:nowrap;
+  }
+  .axis{display:flex; justify-content:space-between; font-family:var(--mono); font-size:10.5px; color:var(--ink-3)}
+  table{width:100%; border-collapse:collapse; font-size:13px}
+  .scroll{overflow-x:auto}
+  th,td{text-align:left; padding:8px 10px 8px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:11px; letter-spacing:.1em; color:var(--ink-3); font-weight:700; white-space:nowrap}
+  td.n{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right; white-space:nowrap; padding-right:0}
+  tfoot td{border-bottom:none; border-top:2px solid var(--ink); font-weight:700}
+  .swatch{display:inline-block; width:9px; height:9px; margin-right:7px; vertical-align:baseline}
+  .sw-fuel{background:var(--ochre)} .sw-reno{background:var(--blue)} .sw-insp{background:var(--blue); opacity:.6}
+
+  .note{font-size:12px; color:var(--ink-2); line-height:1.7}
+  .note b{color:var(--shu); font-weight:700}
+
+  /* ── weeks ── */
+  ol.weeks{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0}
+  ol.weeks li{
+    display:grid; grid-template-columns:58px 1fr; gap:14px;
+    padding:14px 0; border-bottom:1px solid var(--line);
+  }
+  ol.weeks li:first-child{border-top:1px solid var(--line)}
+  .wk{font-family:var(--mono); font-size:12px; color:var(--ink-3); line-height:1.5}
+  .wk b{display:block; font-size:14px; color:var(--ink); font-weight:500}
+  .task{display:flex; flex-direction:column; gap:6px; font-size:13.5px}
+  .task .line{display:flex; gap:9px}
+  .task .line::before{
+    content:attr(data-k); flex:0 0 44px; font-size:10.5px; letter-spacing:.08em;
+    font-weight:700; padding-top:3px;
+  }
+  .task .line.r::before{color:var(--blue)}
+  .task .line.f::before{color:var(--ochre)}
+  .task .line.c::before{color:var(--ink-3)}
+
+  /* ── never / risk ── */
+  .never{background:var(--shu-soft); border:1px solid var(--shu-line); padding:18px; display:flex; flex-direction:column; gap:10px}
+  .never h2{color:var(--shu)}
+  .never ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:7px; font-size:13.5px}
+  .never li{display:flex; gap:9px}
+  .never li::before{content:"×"; color:var(--shu); font-weight:700; flex:0 0 auto}
+
+  .risks{display:flex; flex-direction:column; gap:0}
+  .risk{display:grid; grid-template-columns:1fr; gap:4px; padding:13px 0; border-bottom:1px solid var(--line)}
+  .risk:first-child{border-top:1px solid var(--line)}
+  .risk h3{font-size:14px}
+  .risk p{font-size:13px; color:var(--ink-2)}
+
+  footer{font-size:11.5px; color:var(--ink-3); border-top:1px solid var(--line); padding-top:16px; line-height:1.8}
+  a{color:var(--blue)}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">営業作戦書 ／ 案</div>
+    <h1>現場のプロに、仕事を運ぶ。</h1>
+    <div class="meta">
+      <span><b>作成</b> 2026-09-12</span>
+      <span><b>期間</b> 60日（9/12〜11/10）</span>
+      <span><b>担当</b> 岩崎（営業・経営。現場には出ない）</span>
+    </div>
+  </header>
+
+  <div class="band">
+    <div class="goal">
+      <span class="k">目標（取り分）</span>
+      <span class="v">月 50万円</span>
+      <span class="s">生活できる額。2027年2月末まで</span>
+    </div>
+    <div>
+      <span class="k">現在地</span>
+      <span class="v">月 3〜5万円</span>
+      <span class="s">燃料のみ。固定費0（実績値）</span>
+    </div>
+    <div>
+      <span class="k">10/1 以降</span>
+      <span class="v">清掃収入 0円</span>
+      <span class="s">事業譲渡。手元資金 400万円（実績値）</span>
+    </div>
+  </div>
+
+  <p class="lede">
+    岩崎の事業は <strong>営業代行</strong> になる。委託元は2社。庄栄興産（原状回復の一気通貫）と LIOAS（配達給油）。
+    どちらも共通しているのは、<strong>営業機能を持たない事業者の売上を、営業で作る</strong>こと。
+    売る商材は違っても、やっていることは1つ。
+  </p>
+
+  <section>
+    <div class="rule"><h2>二本柱</h2><span class="no">性格が違うので、役割も分ける</span></div>
+    <div class="pillars">
+
+      <article class="pillar a">
+        <h2>原状回復 一気通貫</h2>
+        <p class="who">庄栄興産の名前で営業。単価を上げる柱。</p>
+        <div class="chain">
+          <span>管理会社</span><i>→</i><span>岩崎＋福源屋</span><i>→</i><span>工務店</span><i>＋</i><span>大槻（清掃）</span>
+        </div>
+        <dl>
+          <dt>勝ち筋</dt>
+          <dd>同業（管理会社）が出す提案。「管理会社の立会を、管理会社が代行する」。工事業者と同じ単価勝負の土俵に乗らない。</dd>
+
+          <dt>商品</dt>
+          <dd>退去立会（<b>有料</b>）→ 原状回復工事 → 空室清掃 → 完了確認。立会は入口商品にもなる。</dd>
+
+          <dt>単価が上がる理由</dt>
+          <dd>下請けの1K美装 <span class="num">9,000円</span> に対し、管理会社直請けは <span class="num">13,000円</span>（実績値）。1次請けに入れば1Kでも上がる。</dd>
+
+          <dt>ターゲット</dt>
+          <dd>大阪の管理会社 <span class="num">204社</span>（日管協名簿ほか）。</dd>
+          <dd class="tags">
+            <span class="tag hot">高 21社</span><span class="tag">吹田13</span><span class="tag">豊中7</span><span class="tag">池田1</span><span class="tag">中 60社</span>
+          </dd>
+
+          <dt>入り方</dt>
+          <dd>全部の切り替えは狙わない。「立会だけ」「繁忙期の溢れ分」「特定エリアだけ」で入り、結果を出して広げる。</dd>
+
+          <dt>取り分</dt>
+          <dd>工事の粗利から。清掃からは取らない。率は未登録（<b>2分の1以上で交渉</b>）。</dd>
+        </dl>
+      </article>
+
+      <article class="pillar b">
+        <h2>配達給油</h2>
+        <p class="who">LIOAS の名前で営業。継続収入で足場を作る柱。</p>
+        <div class="chain">
+          <span>モリカワ商事（契約）</span><i>→</i><span>LIOAS 岩崎（窓口）</span><i>→</i><span>配送業者</span>
+        </div>
+        <dl>
+          <dt>勝ち筋</dt>
+          <dd>利益は 数量 × 取り分。<b>件数より1件の数量</b>。配送料が有利な大阪市内・阪神間に絞る。売っているのは油ではなく「給油所まで往復する時間」。</dd>
+
+          <dt>商品</dt>
+          <dd>軽油が基本。灯油・重油はエリア限定（実績値）。給油対象は 重機・トラック・ダンプ・クレーン・タンク。現在すでに実施中。</dd>
+
+          <dt>報酬</dt>
+          <dd>月間数量 × <span class="num">1〜3円/L</span>、翌月末振込（実績値）。運送業15台級で <span class="num">月8万円</span>（仮置き）。</dd>
+
+          <dt>ターゲット</dt>
+          <dd class="tags">
+            <span class="tag hot">建設・解体・産廃</span><span class="tag">運送（10台〜）</span><span class="tag">バス</span><span class="tag">工場ボイラー</span>
+          </dd>
+          <dd>候補 <span class="num">42社</span> 抽出済み。次は「自社の中間処理工場を持つ産廃業者」から当たる。重機が毎日同じ場所で動くので数量が読める。</dd>
+
+          <dt>向く顧客</dt>
+          <dd>①重機を自社保有 ②自家用給油設備がない ③稼働時間が給油所と合わない。この3つが揃う先。</dd>
+
+          <dt>触らない先</dt>
+          <dd>配送業者の既存顧客。接触前に必ず確認する。</dd>
+        </dl>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"><h2>50万円の組み立て</h2><span class="no">すべて仮置き</span></div>
+    <div class="calc">
+
+      <div class="barwrap">
+        <div class="bar" role="img" aria-label="内訳の積み上げ。燃料24万円、原状回復の分配16.5万円、立会代行15.6万円で合計56.1万円。目標は50万円。">
+          <div class="seg fuel" style="width:40%">24.0</div>
+          <div class="seg reno" style="width:27.5%">16.5</div>
+          <div class="seg insp" style="width:26%">15.6</div>
+          <div class="target" style="left:83.3%"></div>
+        </div>
+        <div class="axis"><span>0</span><span>20万</span><span>40万</span><span>60万</span></div>
+      </div>
+
+      <div class="scroll">
+        <table>
+          <thead>
+            <tr><th>積み上げ</th><th>内訳</th><th style="text-align:right">月額</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="swatch sw-fuel"></span>燃料</td>
+              <td>運送業 2件（各8万）＋ 大口 4件（各2万）</td>
+              <td class="n">240,000</td>
+            </tr>
+            <tr>
+              <td><span class="swatch sw-reno"></span>原状回復の分配</td>
+              <td>管理会社3社 × 月4.3件 × 12,750円（粗利の1/2）</td>
+              <td class="n">165,000</td>
+            </tr>
+            <tr>
+              <td><span class="swatch sw-insp"></span>立会代行</td>
+              <td>管理会社3社 × 月4.3回 × 12,000円（全額の場合）</td>
+              <td class="n">156,000</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="2">合計</td><td class="n">561,000</td></tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <p class="note">
+        1K工事の受注8.5万円・元請け粗利30%という参考値からの試算。<b>出典の本文は未確認、すべて仮置き</b>。
+        含意は3つ。<b>分配率を2分の1以上で交渉する</b>。<b>立会代行の売上を岩崎側に多く配分する</b>。<b>燃料の運送業を2件以上取る</b>。
+        この3つが揃わないと50万円には届かない。原状回復だけで届かせようとすると、管理会社が12〜15社必要になる。
+      </p>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"><h2>60日でやること</h2><span class="no">2週間 × 4。走りながら直す</span></div>
+    <ol class="weeks">
+      <li>
+        <div class="wk"><b>W1–2</b>9/12–9/25</div>
+        <div class="task">
+          <div class="line r" data-k="原状回復">譲渡契約の競業避止・秘密保持を弁護士に確認。庄栄興産と価格を決める（立会単価・工事単価表・保証期間・日数）。仮置きで先に進めてよい。</div>
+          <div class="line f" data-k="燃料">灯油・重油の対応エリアを確認。配送業者の既存顧客の確認方法を決める。産廃業者から候補を広げる。</div>
+          <div class="line c" data-k="共通">会社の所在地・電話・メールを登録。これがないとメールが1通も出せない。スプレッドシートを作る。</div>
+        </div>
+      </li>
+      <li>
+        <div class="wk"><b>W3–4</b>9/26–10/9</div>
+        <div class="task">
+          <div class="line r" data-k="原状回復">提案書 v1。高優先21社のサイトから電話番号を埋める。初回接触を開始（1日2〜3通）。<b>10/1 譲渡実行。</b></div>
+          <div class="line f" data-k="燃料">大口候補へ初回接触を開始。</div>
+          <div class="line c" data-k="共通">朝1通の通知（LINE）を動かす。承認の型を回す。</div>
+        </div>
+      </li>
+      <li>
+        <div class="wk"><b>W5–6</b>10/10–10/23</div>
+        <div class="task">
+          <div class="line r" data-k="原状回復">商談4社。「立会だけお試し」で提案2社。自社管理物件で完了報告の見本を1室分撮る。</div>
+          <div class="line f" data-k="燃料">商談3社、与信申請1件。</div>
+          <div class="line c" data-k="共通">数字で振り返り。効いた文面だけをプレイブックに残す。</div>
+        </div>
+      </li>
+      <li>
+        <div class="wk"><b>W7–9</b>10/24–11/10</div>
+        <div class="task">
+          <div class="line r" data-k="原状回復">管理会社1社から継続発注を取る。賃貸住宅フェア大阪（11/26–27）の来場登録。</div>
+          <div class="line f" data-k="燃料">運送業1件＋大口1件を取る。</div>
+          <div class="line c" data-k="共通">接触→商談→提案の転換率を出し、次の60日を設計する。</div>
+        </div>
+      </li>
+    </ol>
+    <p class="note">60日の到達目標は <b>管理会社1社（継続）＋ 燃料 運送業1件＋大口1件</b>。これは50万円への通過点であって、到達点ではない。</p>
+  </section>
+
+  <div class="never">
+    <h2>やらないこと</h2>
+    <ul>
+      <li>清掃単体の飛び込み。管理会社の「清掃業者リスト」に入るだけの営業</li>
+      <li>1日200件のテレアポ、FAX一斉送信、地図サービスからの機械的なリスト作成</li>
+      <li>出所が説明できないリストの使用（カミックスのリストは使わない）</li>
+      <li>配送業者の既存顧客への営業</li>
+      <li>価格表にない金額を口頭で言う</li>
+      <li>オーナーへの直接営業で管理会社の頭越しをする</li>
+      <li>他社批判、根拠のない保証、ガイドラインに反する負担区分の説明</li>
+    </ul>
+  </div>
+
+  <section>
+    <div class="rule"><h2>効いてくるリスク</h2><span class="no">法務・税務は論点整理まで。最終確認は専門家へ</span></div>
+    <div class="risks">
+      <div class="risk">
+        <h3>分配率が未定のまま営業が進む</h3>
+        <p>書面化は不要という判断は尊重する。ただし最初の受注案件で「この案件の粗利がいくらで、岩崎にいくら」を実数で確認すること。そこで認識がずれたら書面にする。フリーランス新法では、発注者側が業務内容・報酬・支払期日をメール等で示す義務がある。メール1本が最低線。</p>
+      </div>
+      <div class="risk">
+        <h3>譲渡契約の競業避止が岩崎個人を縛る可能性</h3>
+        <p>会社法の競業避止は譲渡会社に及び、岩崎個人には直接及ばない。ただし契約書に代表者個人を縛る特約があれば別。10/1 前に条文を読む。</p>
+      </div>
+      <div class="risk">
+        <h3>清算中の法人では新しい契約を結べない</h3>
+        <p>清算中の会社は清算目的の範囲でしか活動できない。庄栄興産・LIOAS との契約と報酬の受け皿は個人事業に切り替える。請求名義と税務に直結する。</p>
+      </div>
+      <div class="risk">
+        <h3>数字の出典が未検証</h3>
+        <p>工事の受注額・粗利率・立会単価は、検索結果の要約から取った参考値。本文を1つも読めていない。提案書や採算表に載せる前に、庄栄興産の実数で置き換える。</p>
+      </div>
+      <div class="risk">
+        <h3>燃料は Web に情報が出ない業界</h3>
+        <p>配達給油を打ち出している配送業者を検索で1社も確認できなかった。実態はあるのに Web に出ていない。つまり競合も検索では見つからない。競合情報は岩崎の業界内の情報に頼る。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    数字の区分は「実績値」か「仮置き」。出典が言えない数字は書かない。<br>
+    詳細は corly-os リポジトリの <span class="num">company/07_strategy.md</span>（戦略）、<span class="num">company/03_playbook.md</span>（トーク）、<span class="num">docs/sales-flow.md</span>（営業フロー）。
+  </footer>
+
+</div>
