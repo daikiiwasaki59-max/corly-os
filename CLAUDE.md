@@ -18,6 +18,7 @@ Claude Code から役職エージェントを呼び出して業務を回す。
 | メール/DM/督促の書式 | `company/04_templates.md` |
 | データ定義と正データの場所 | `company/06_data_schema.md` |
 | 戦略書（60日計画・部署の役割・ゴール試算） | `company/07_strategy.md` |
+| AIの置き方（全体最適・運用ルール） | `company/08_operating_model.md` |
 
 ## 役職エージェント
 | 役職 | ファイル | 呼び方の例 |

@@ -1,0 +1,348 @@
+<title>CORLY OS 設計図</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700&family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --paper:#EDF0F3; --surface:#FFFFFF; --surface-2:#F5F8FA;
+    --ink:#16232E; --ink-2:#46586A; --ink-3:#7C8C9B; --line:#D3DBE2;
+    --blue:#1F5C8B; --blue-soft:#E2EBF3; --blue-line:#B8CCDD;
+    --ochre:#8F6310; --ochre-soft:#F4ECDA; --ochre-line:#DFCC9F;
+    --shu:#A93226; --shu-soft:#F6E5E2; --shu-line:#E0BDB7;
+    --display:"Shippori Mincho B1",'Hiragino Mincho ProN',"Yu Mincho",serif;
+    --body:"Noto Sans JP",'Hiragino Sans',"Yu Gothic",system-ui,sans-serif;
+    --mono:"Roboto Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#111921; --surface:#18242F; --surface-2:#1D2B37;
+      --ink:#E7EDF3; --ink-2:#A8B9C7; --ink-3:#77899A; --line:#2B3D4C;
+      --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
+      --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
+      --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#111921; --surface:#18242F; --surface-2:#1D2B37;
+    --ink:#E7EDF3; --ink-2:#A8B9C7; --ink-3:#77899A; --line:#2B3D4C;
+    --blue:#7DB2DC; --blue-soft:#1A3448; --blue-line:#2F5673;
+    --ochre:#DBAE55; --ochre-soft:#352B14; --ochre-line:#5C4A21;
+    --shu:#E38779; --shu-soft:#3A1E1A; --shu-line:#5E322C;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--body);
+    font-size:15px; line-height:1.78; -webkit-font-smoothing:antialiased;
+    padding-inline:16px; padding-block:0;
+  }
+  .wrap{max-width:760px; margin:0 auto; padding-block:36px 64px; display:flex; flex-direction:column; gap:38px}
+  h1,h2,h3{font-family:var(--display); font-weight:700; margin:0; text-wrap:balance; line-height:1.35}
+  h1{font-size:clamp(25px,6vw,34px); letter-spacing:.02em}
+  h2{font-size:clamp(18px,4.3vw,22px)}
+  h3{font-size:15.5px}
+  p{margin:0}
+  .num{font-family:var(--mono); font-variant-numeric:tabular-nums}
+  .eyebrow{font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:var(--ink-3); font-weight:700}
+
+  header{display:flex; flex-direction:column; gap:10px; border-bottom:2px solid var(--ink); padding-bottom:18px}
+  .meta{display:flex; flex-wrap:wrap; gap:5px 18px; font-size:12px; color:var(--ink-2)}
+  .meta b{font-weight:500; color:var(--ink-3)}
+
+  .lede{font-size:16.5px; line-height:1.9}
+  .lede strong{font-weight:700; background:linear-gradient(transparent 62%, var(--blue-soft) 62%)}
+
+  section{display:flex; flex-direction:column; gap:16px}
+  .rule{display:flex; align-items:baseline; gap:12px; border-bottom:1px solid var(--line); padding-bottom:8px}
+  .rule .no{font-family:var(--mono); font-size:11.5px; color:var(--ink-3)}
+
+  figure{margin:0; background:var(--surface); border:1px solid var(--line); padding:20px 16px 14px}
+  figure svg{display:block; width:100%; max-width:100%; height:auto; color:var(--ink)}
+  figcaption{margin-top:12px; font-size:12px; color:var(--ink-2); line-height:1.7; border-top:1px solid var(--line); padding-top:10px}
+
+  .scroll{overflow-x:auto}
+  table{width:100%; border-collapse:collapse; font-size:13.5px}
+  th,td{text-align:left; padding:9px 12px 9px 0; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:11px; letter-spacing:.1em; color:var(--ink-3); font-weight:700; white-space:nowrap}
+
+  ol.ranked{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0}
+  ol.ranked li{display:grid; grid-template-columns:34px 1fr; gap:14px; padding:16px 0; border-bottom:1px solid var(--line)}
+  ol.ranked li:first-child{border-top:1px solid var(--line)}
+  .rank{
+    font-family:var(--mono); font-size:13px; font-weight:500; height:26px;
+    display:grid; place-items:center; border:1px solid var(--blue-line);
+    background:var(--blue-soft); color:var(--blue);
+  }
+  .ranked .bd{display:flex; flex-direction:column; gap:5px}
+  .ranked h3{font-size:15px}
+  .ranked p{font-size:13.5px; color:var(--ink-2)}
+  .ranked .mech{font-size:13px; background:var(--surface); border-left:3px solid var(--blue); padding:8px 12px; color:var(--ink)}
+
+  .state{background:var(--surface); border:1px solid var(--line); display:flex; flex-direction:column}
+  .state .r{display:grid; grid-template-columns:22px 1fr auto; gap:12px; align-items:center; padding:13px 16px; border-bottom:1px solid var(--line); font-size:13.5px}
+  .state .r:last-child{border-bottom:none}
+  .mark{font-family:var(--mono); font-size:14px; text-align:center}
+  .ok{color:var(--blue)} .ng{color:var(--shu); font-weight:700}
+  .state .w{font-size:11.5px; color:var(--ink-3); white-space:nowrap}
+  .state .r.bad{background:var(--shu-soft)}
+  .state .r.bad .w{color:var(--shu); font-weight:700}
+
+  .rules{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:9px; font-size:13.5px}
+  .rules li{display:grid; grid-template-columns:22px 1fr; gap:10px}
+  .rules li::before{content:counter(r); counter-increment:r; font-family:var(--mono); font-size:12px; color:var(--ink-3); padding-top:2px}
+  .rules{counter-reset:r}
+
+  .callout{background:var(--shu-soft); border:1px solid var(--shu-line); padding:16px 18px; font-size:14px; line-height:1.75}
+  .callout b{color:var(--shu)}
+  footer{font-size:11.5px; color:var(--ink-3); border-top:1px solid var(--line); padding-top:14px; line-height:1.8}
+  footer a{color:var(--blue)}
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">AIの置き方 ／ 全体最適</div>
+    <h1>CORLY OS 設計図</h1>
+    <div class="meta">
+      <span><b>更新</b> 2026-09-14</span>
+      <span><b>対象</b> 岩崎1人 ＋ 役職エージェント5体</span>
+    </div>
+  </header>
+
+  <p class="lede">
+    真ん中に置くのは AI ではない。<strong>AI が読み書きする「正データ ＋ 会社知識」が真ん中</strong>で、AI はそれを扱う手。
+    中心が空なら、AI を何体並べても部分最適にしかならない。
+  </p>
+
+  <section>
+    <div class="rule"><h2>つながっているかどうか</h2><span class="no">違いは矢印だけ</span></div>
+
+    <figure>
+      <svg viewBox="0 0 700 448" role="img" aria-label="部分最適では5つの業務がそれぞれ別にAIを使い、業務同士がつながっていない。全体最適では5つの業務が中心の正データと会社知識を読み書きし、AIがその上で横断する。">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <polygon points="0,1 9,5 0,9" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <!-- 部分最適 -->
+        <text x="0" y="16" font-size="13" font-weight="700" fill="currentColor">部分最適</text>
+        <text x="76" y="16" font-size="11.5" fill="currentColor" opacity=".6">業務ごとに AI を使う</text>
+
+        <g font-size="10.5" text-anchor="middle">
+          <rect x="38" y="34" width="36" height="18" fill="none" stroke="currentColor" opacity=".45"/>
+          <text x="56" y="47" fill="currentColor" opacity=".7">AI</text>
+          <rect x="170" y="34" width="36" height="18" fill="none" stroke="currentColor" opacity=".45"/>
+          <text x="188" y="47" fill="currentColor" opacity=".7">AI</text>
+          <rect x="302" y="34" width="36" height="18" fill="none" stroke="currentColor" opacity=".45"/>
+          <text x="320" y="47" fill="currentColor" opacity=".7">AI</text>
+          <rect x="434" y="34" width="36" height="18" fill="none" stroke="currentColor" opacity=".45"/>
+          <text x="452" y="47" fill="currentColor" opacity=".7">AI</text>
+          <rect x="566" y="34" width="36" height="18" fill="none" stroke="currentColor" opacity=".45"/>
+          <text x="584" y="47" fill="currentColor" opacity=".7">AI</text>
+        </g>
+
+        <g stroke="currentColor" opacity=".45">
+          <line x1="56" y1="52" x2="56" y2="70"/>
+          <line x1="188" y1="52" x2="188" y2="70"/>
+          <line x1="320" y1="52" x2="320" y2="70"/>
+          <line x1="452" y1="52" x2="452" y2="70"/>
+          <line x1="584" y1="52" x2="584" y2="70"/>
+        </g>
+
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="0" y="70" width="112" height="40" fill="none" stroke="currentColor"/>
+          <text x="56" y="95" fill="currentColor">管理会社営業</text>
+          <rect x="132" y="70" width="112" height="40" fill="none" stroke="currentColor"/>
+          <text x="188" y="95" fill="currentColor">燃料営業</text>
+          <rect x="264" y="70" width="112" height="40" fill="none" stroke="currentColor"/>
+          <text x="320" y="95" fill="currentColor">現場</text>
+          <rect x="396" y="70" width="112" height="40" fill="none" stroke="currentColor"/>
+          <text x="452" y="95" fill="currentColor">経理</text>
+          <rect x="528" y="70" width="112" height="40" fill="none" stroke="currentColor"/>
+          <text x="584" y="95" fill="currentColor">事務</text>
+        </g>
+
+        <text x="320" y="139" font-size="11.5" text-anchor="middle" fill="currentColor" opacity=".65">つながっていない ＝ 岩崎の作業が少し速くなるだけ</text>
+
+        <line x1="0" y1="163" x2="640" y2="163" stroke="currentColor" opacity=".2"/>
+
+        <!-- 全体最適 -->
+        <text x="0" y="199" font-size="13" font-weight="700" fill="#1F5C8B">全体最適</text>
+        <text x="76" y="199" font-size="11.5" fill="currentColor" opacity=".6">同じ中心を読み書きする</text>
+
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="0" y="216" width="112" height="40" fill="none" stroke="#1F5C8B"/>
+          <text x="56" y="241" fill="currentColor">管理会社営業</text>
+          <rect x="132" y="216" width="112" height="40" fill="none" stroke="#1F5C8B"/>
+          <text x="188" y="241" fill="currentColor">燃料営業</text>
+          <rect x="264" y="216" width="112" height="40" fill="none" stroke="#1F5C8B"/>
+          <text x="320" y="241" fill="currentColor">現場</text>
+          <rect x="396" y="216" width="112" height="40" fill="none" stroke="#1F5C8B"/>
+          <text x="452" y="241" fill="currentColor">経理</text>
+          <rect x="528" y="216" width="112" height="40" fill="none" stroke="#1F5C8B"/>
+          <text x="584" y="241" fill="currentColor">事務</text>
+        </g>
+
+        <g stroke="#1F5C8B" fill="none" color="#1F5C8B">
+          <line x1="44" y1="256" x2="44" y2="316" marker-end="url(#ar)"/>
+          <line x1="176" y1="256" x2="176" y2="316" marker-end="url(#ar)"/>
+          <line x1="308" y1="256" x2="308" y2="316" marker-end="url(#ar)"/>
+          <line x1="440" y1="256" x2="440" y2="316" marker-end="url(#ar)"/>
+          <line x1="572" y1="256" x2="572" y2="316" marker-end="url(#ar)"/>
+          <line x1="68" y1="316" x2="68" y2="256" marker-end="url(#ar)"/>
+          <line x1="200" y1="316" x2="200" y2="256" marker-end="url(#ar)"/>
+          <line x1="332" y1="316" x2="332" y2="256" marker-end="url(#ar)"/>
+          <line x1="464" y1="316" x2="464" y2="256" marker-end="url(#ar)"/>
+          <line x1="596" y1="316" x2="596" y2="256" marker-end="url(#ar)"/>
+        </g>
+        <text x="34" y="290" font-size="10" text-anchor="end" fill="currentColor" opacity=".7">記録</text>
+        <text x="606" y="290" font-size="10" fill="currentColor" opacity=".7">参照</text>
+
+        <rect x="0" y="316" width="640" height="52" fill="none" stroke="#1F5C8B" stroke-width="2"/>
+        <text x="320" y="340" font-size="13" font-weight="700" text-anchor="middle" fill="#1F5C8B">正データ ＋ 会社知識</text>
+        <text x="320" y="358" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">取引先・案件・活動・請求 ／ 憲法・価格表・プレイブック・承認ルール</text>
+
+        <line x1="320" y1="368" x2="320" y2="392" stroke="#1F5C8B" color="#1F5C8B" marker-end="url(#ar)"/>
+        <rect x="232" y="392" width="176" height="30" fill="none" stroke="#1F5C8B"/>
+        <text x="320" y="412" font-size="11.5" text-anchor="middle" fill="currentColor">役職エージェント 5体</text>
+
+        <text x="320" y="443" font-size="11.5" text-anchor="middle" fill="currentColor" opacity=".65">横断が見える ＋ 知識が残る</text>
+      </svg>
+      <figcaption>違いは箱ではなく矢印。業務が同じ中心に書き戻すかどうかで、横断が見えるかどうかが決まる。</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="rule"><h2>効いてくる順</h2><span class="no">1人の会社では、記事と順番が逆になる</span></div>
+    <ol class="ranked">
+      <li>
+        <span class="rank">1</span>
+        <div class="bd">
+          <h3>知識の財産化</h3>
+          <p>いま会社の中身は、ほぼ全部が岩崎の頭の中にある。書き出さないと、休めない、任せられない、引き継げない。溜まったリポジトリそのものが資産になる。人を雇うときも、庄栄興産に引き継ぐときも、渡すのはこれ。</p>
+          <div class="mech">訪問 → 一言メモ → 活動ログ（AIが記録）→ 効いた返しをAIが候補として提示 → <b>岩崎が「採用」と言ったものだけ</b>プレイブックに昇格</div>
+        </div>
+      </li>
+      <li>
+        <span class="rank">2</span>
+        <div class="bd">
+          <h3>属人化の解消</h3>
+          <p>岩崎が倒れたら全部止まる。大槻は現場、岩崎は営業と経営で、重なりがない。目標は「岩崎に聞かないと分からない」をゼロに近づけること。</p>
+          <div class="mech">価格は価格表からしか引かない。文面はテンプレから。承認は承認待ちシートで。判断の根拠を全部ファイルに出す</div>
+        </div>
+      </li>
+      <li>
+        <span class="rank">3</span>
+        <div class="bd">
+          <h3>全体の効率化</h3>
+          <p>部署がないので、部署をまたぐ重複業務は存在しない。代わりにあるのは <b>同じ相手への機会損失</b>。中心にデータがあると、それが見える。</p>
+          <div class="mech">同じ会社が2つのリストにいる／取引先が別の役割も持つ／1回の訪問で2つ提案できる</div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="rule"><h2>横断で拾えるもの</h2><span class="no">月1回、exec が報告する</span></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>見つかるもの</th><th>具体例</th></tr></thead>
+        <tbody>
+          <tr><td>同じ会社が2つのリストにいる</td><td>管理会社が自社で車両を持っていれば、燃料も提案できる</td></tr>
+          <tr><td>取引先が別の役割も持つ</td><td>協力工務店は工事の発注先であり、重機を持つなら燃料の候補でもある</td></tr>
+          <tr><td>1回の訪問で2つ提案できる</td><td>清掃の納品先で、燃料の話を1分だけする</td></tr>
+          <tr><td>紹介の経路が見える</td><td>管理会社の物件オーナーが、別の物件を自主管理しているかもしれない</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="rule"><h2>知識が残る回し方</h2><span class="no">止まると何も残らない</span></div>
+    <figure>
+      <svg viewBox="0 0 700 214" role="img" aria-label="訪問から一言メモ、活動ログ、岩崎の採用判断を経てプレイブックへ知識が昇格し、次の訪問へ戻る循環。">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <polygon points="0,1 9,5 0,9" fill="currentColor"/>
+          </marker>
+        </defs>
+
+        <g font-size="11.5" text-anchor="middle">
+          <rect x="0" y="30" width="118" height="46" fill="none" stroke="currentColor"/>
+          <text x="59" y="50" fill="currentColor">訪問・商談</text>
+          <text x="59" y="66" fill="currentColor" opacity=".6" font-size="10">岩崎</text>
+
+          <rect x="148" y="30" width="118" height="46" fill="none" stroke="currentColor"/>
+          <text x="207" y="50" fill="currentColor">一言メモ</text>
+          <text x="207" y="66" fill="currentColor" opacity=".6" font-size="10">岩崎が話すだけ</text>
+
+          <rect x="296" y="30" width="118" height="46" fill="none" stroke="currentColor"/>
+          <text x="355" y="50" fill="currentColor">活動ログ</text>
+          <text x="355" y="66" fill="currentColor" opacity=".6" font-size="10">AIが記録</text>
+
+          <rect x="444" y="30" width="118" height="46" fill="none" stroke="#A93226" stroke-width="2"/>
+          <text x="503" y="50" fill="currentColor">採用の判断</text>
+          <text x="503" y="66" fill="#A93226" font-size="10" font-weight="700">岩崎だけ</text>
+
+          <rect x="592" y="30" width="108" height="46" fill="none" stroke="#1F5C8B" stroke-width="2"/>
+          <text x="646" y="50" fill="#1F5C8B" font-weight="700">プレイブック</text>
+          <text x="646" y="66" fill="currentColor" opacity=".6" font-size="10">会社の財産</text>
+        </g>
+
+        <g stroke="currentColor" fill="none">
+          <line x1="118" y1="53" x2="144" y2="53" marker-end="url(#ar2)"/>
+          <line x1="266" y1="53" x2="292" y2="53" marker-end="url(#ar2)"/>
+          <line x1="414" y1="53" x2="440" y2="53" marker-end="url(#ar2)"/>
+          <line x1="562" y1="53" x2="588" y2="53" marker-end="url(#ar2)"/>
+        </g>
+        <g font-size="9.5" text-anchor="middle" fill="currentColor" opacity=".7">
+          <text x="131" y="46">話す</text>
+          <text x="279" y="46">起こす</text>
+          <text x="427" y="46">候補を出す</text>
+          <text x="575" y="46">昇格</text>
+        </g>
+
+        <path d="M646 76 L646 140 L59 140 L59 80" stroke="#1F5C8B" color="#1F5C8B" fill="none" marker-end="url(#ar2)"/>
+        <text x="352" y="133" font-size="11" text-anchor="middle" fill="#1F5C8B">次の訪問で、前より良い返しができる</text>
+
+        <text x="0" y="182" font-size="11.5" fill="currentColor" opacity=".75">この輪が止まるのは、岩崎が話さなかったとき。</text>
+        <text x="0" y="202" font-size="11.5" fill="currentColor" opacity=".75">話さなかった商談は、無かったことになる。</text>
+      </svg>
+      <figcaption>AI は記録と候補出しをするが、何を会社の知識にするかは岩崎が決める。勝手に書き換えない。</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <div class="rule"><h2>運用のルール</h2><span class="no">5つ</span></div>
+    <ol class="rules">
+      <li>正データは1か所。同じ情報を2か所に書かない。</li>
+      <li>役職エージェントは同じデータを見る。役職ごとに別のリストを作らない。</li>
+      <li>岩崎が話したことは必ずどこかに落ちる。落ちなかった情報は無かったことになる。</li>
+      <li>AI が勝手に会社知識を書き換えない。プレイブックへの昇格は岩崎の「採用」が要る。</li>
+      <li>月1回、exec が横断で見る。2つのリストに同じ会社がいないか、取引先が別の役割を持てないか。</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="rule"><h2>いまの状態</h2><span class="no">中心が空</span></div>
+    <div class="state">
+      <div class="r"><span class="mark ok">✓</span><span>会社知識 — 憲法・価格表・ICP・プレイブック・文面・承認ルール・データ定義・この設計</span><span class="w">8ファイル</span></div>
+      <div class="r"><span class="mark ok">✓</span><span>役職エージェント — exec ／ inside-sales ／ outside-sales ／ accounting ／ admin</span><span class="w">5体</span></div>
+      <div class="r bad"><span class="mark ng">×</span><span>正データ — スプレッドシート「CORLY OS」が未作成</span><span class="w">空</span></div>
+      <div class="r"><span class="mark ok">✓</span><span>入れる中身 — 管理会社 204社、燃料候補 42社は用意済み（リポジトリの CSV）</span><span class="w">待機中</span></div>
+    </div>
+
+    <div class="callout">
+      <b>いまはまだ部分最適の段階。</b> 会社知識も役職も揃っているのに、真ん中が空なので業務がつながっていない。
+      スプレッドシートを1回作って、204社と42社を流し込む。それで初めて、上の図の下半分になる。
+    </div>
+  </section>
+
+  <footer>
+    元にした型は、AI を全社の中心に置いて業務のムダを洗い出す「全体最適」の考え方。1人の会社向けに順番と中身を組み替えた。<br>
+    詳細は corly-os リポジトリの <span class="num">company/08_operating_model.md</span>。手順は <span class="num">docs/setup-phase0.md</span>。<br>
+    関連: <a href="https://claude.ai/code/artifact/371a7c58-c6b4-4da7-bd94-afffcd36e5a2">岩崎の営業作戦書</a> ／ <a href="https://claude.ai/code/artifact/71c815ff-d90f-403a-8892-54cd9bdabecc">今週の営業ボード</a>
+  </footer>
+
+</div>
