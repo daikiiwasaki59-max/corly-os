@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>発注書 ラホンバンマーラータン大阪四天王寺店</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --line:#b9b2a6;
+    --alert:#c0392b;
+    --amount-bg:#eae4d8;
+    --head-bg:#f0ece3;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#f5f5f5;color:var(--ink);}
+  body{
+    font-family:"Hiragino Mincho ProN","Yu Mincho","YuMincho","MS PMincho",serif;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .sheet{
+    width:210mm;min-height:297mm;margin:12px auto;padding:10mm 16mm 8mm;
+    background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.15);
+  }
+  .date{text-align:right;font-size:11.5pt;}
+  h1{
+    text-align:center;font-size:24pt;font-weight:700;
+    letter-spacing:.5em;margin:4mm 0 6mm;padding-left:.5em;
+  }
+  .parties{display:flex;gap:10mm;align-items:flex-start;}
+  .to{flex:1;border-bottom:1.2px solid #444;padding-bottom:3mm;}
+  .to .name{font-size:17pt;font-weight:700;}
+  .to .hon{font-size:11pt;margin-left:.6em;}
+  .from{flex:1;font-size:10.5pt;line-height:1.75;}
+  .from .co{font-size:15pt;font-weight:700;margin-bottom:2mm;}
+  .lead{margin:5mm 0 4mm;font-size:11.5pt;}
+  .fields{margin:0 0 5mm;padding-left:4mm;}
+  .field{display:flex;align-items:flex-end;margin-bottom:3mm;font-size:11.5pt;}
+  .field .label{width:22mm;flex:none;letter-spacing:.35em;}
+  .field .value{flex:1;border-bottom:1px solid var(--line);padding:0 0 1.2mm 4mm;min-height:6mm;}
+  .amount{display:flex;align-items:center;gap:4mm;margin:0 0 5mm;padding-left:4mm;font-size:11.5pt;}
+  .amount .label{width:22mm;flex:none;letter-spacing:.35em;}
+  .amount .box{
+    background:var(--amount-bg);border:1px solid #d6cdbd;
+    padding:2.5mm 8mm;font-size:17pt;font-weight:700;text-align:center;min-width:42mm;
+  }
+  .amount .tax{font-size:10.5pt;}
+  table{width:100%;border-collapse:collapse;font-size:10.5pt;}
+  th,td{border:1px solid var(--line);padding:2.4mm 3mm;}
+  thead th{background:var(--head-bg);text-align:center;font-weight:700;}
+  .c-qty{width:16mm;text-align:center;}
+  .c-unit{width:16mm;text-align:center;}
+  .c-amt{width:28mm;text-align:right;}
+  .c-note{width:24mm;text-align:center;}
+  td.blank{height:7mm;}
+  .detail{
+    margin-top:5mm;border:1px solid var(--line);padding:4.5mm 6mm;font-size:10pt;line-height:1.45;
+  }
+  .detail h2{font-size:10.5pt;font-weight:700;margin:0 0 2.5mm;}
+  .detail p{margin:0 0 2mm;}
+  .detail ul{margin:0 0 2mm;padding-left:5.5mm;}
+  .detail li{margin-bottom:.8mm;}
+  .alert{color:var(--alert);}
+  .block{margin-bottom:2.4mm;}
+  .block:last-child{margin-bottom:0;}
+  @page{size:A4;margin:0;}
+  @media print{
+    body{background:#fff;}
+    .sheet{margin:0;box-shadow:none;width:auto;min-height:0;}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="date">2026年9月17日</div>
+
+  <h1>発注書</h1>
+
+  <div class="parties">
+    <div class="to">
+      <span class="name">株式会社　福源屋</span><span class="hon">御中</span>
+    </div>
+    <div class="from">
+      <div class="co">株式会社CORLY（コーリー）</div>
+      〒541-0053<br>
+      大阪市中央区本町2-3-4アソルティ本町4F<br>
+      TEL.06-4256-2693 / FAX.06-4560-9079<br>
+      連絡先：岩崎　080-1649-2499
+    </div>
+  </div>
+
+  <p class="lead">下記のとおり注文いたします。</p>
+
+  <div class="fields">
+    <div class="field">
+      <span class="label">物件名</span>
+      <span class="value">ラホンバンマーラータン　大阪四天王寺店</span>
+    </div>
+    <div class="field">
+      <span class="label">住　所</span>
+      <span class="value">〒543-0052　大阪府大阪市天王寺区大道1丁目7-6</span>
+    </div>
+    <div class="field">
+      <span class="label">工　期</span>
+      <span class="value">令和8年9月18日　9:00〜</span>
+    </div>
+  </div>
+
+  <div class="amount">
+    <span class="label">金　額</span>
+    <span class="box">¥81,400</span>
+    <span class="tax">（税込）</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>内容</th>
+        <th class="c-qty">数量</th>
+        <th class="c-unit">単位</th>
+        <th class="c-amt">金額</th>
+        <th class="c-note">備考</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>店舗美装一式　※交通諸経費含む</td>
+        <td class="c-qty">1</td>
+        <td class="c-unit">式</td>
+        <td class="c-amt">¥74,000</td>
+        <td class="c-note">税別</td>
+      </tr>
+      <tr>
+        <td class="blank"></td>
+        <td class="c-qty"></td>
+        <td class="c-unit"></td>
+        <td class="c-amt"></td>
+        <td class="c-note"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="detail">
+    <h2>（詳細）</h2>
+
+    <div class="block">
+      <p>内容：店舗美装一式（下記の清掃不要箇所を除く）</p>
+    </div>
+
+    <div class="block">
+      <p>●清掃不要な箇所</p>
+      <ul>
+        <li>1階：シャッター</li>
+        <li>2階：窓の外側（開く方）<span class="alert">※左窓は外側も実施</span></li>
+        <li>3階：窓、トイレ</li>
+        <li>3〜4階の階段</li>
+        <li>4階：全部</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <p class="alert">テーブルと椅子は営業時の状態にされるそうです。清掃後は元の位置に戻してください。</p>
+    </div>
+
+    <div class="block">
+      <p>●鍵について</p>
+      <ul>
+        <li>①シャッター：鍵はありません。直接引き上げて開けてください。</li>
+        <li>②店内入口：当日 080-5846-4141 へご連絡いただければ、店主が開けに伺います。</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <p>■施工前に店舗全体をチェックしてください。</p>
+      <p class="alert">設備の大きな破損箇所・不具合があれば、施工前に店主及び弊社（CORLY）まで連絡下さい。</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
