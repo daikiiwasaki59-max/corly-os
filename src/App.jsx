@@ -1,16 +1,6 @@
 import { useState, useRef } from "react";
-
-// ── CONSTANTS ─────────────────────────────────────────────────
-const C = {
-  bg: "#050508",
-  surface: "#0c0c14",
-  border: "rgba(255,255,255,0.07)",
-  gold: "#F0B429",
-  goldDim: "rgba(240,180,41,0.12)",
-  text: "#F0EEE8",
-  textDim: "rgba(240,238,232,0.45)",
-  textMuted: "rgba(240,238,232,0.25)",
-};
+import { C, inputStyle, Label, TextArea, ActionBtn, SectionTitle } from "./ui.jsx";
+import JournalScreen from "./JournalScreen.jsx";
 
 const CHANNELS = [
   { id: "walkin",   icon: "🚶", label: "飛び込み",  color: "#F97316", online: false },
@@ -586,13 +576,8 @@ function DailyReportScreen() {
 }
 
 // ── SHARED PRIMITIVES ─────────────────────────────────────────
-const inputStyle = { width:"100%", padding:"9px 12px", borderRadius:9, background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.1)", color:"#F0EEE8", fontSize:13, outline:"none" };
 const stepperBtnStyle = { width:26, height:26, borderRadius:7, background:"rgba(255,255,255,0.06)", border:"1px solid rgba(255,255,255,0.12)", color:"#F0EEE8", fontSize:14, lineHeight:1, cursor:"pointer" };
-function Label({children}){ return <div style={{fontSize:9,color:"rgba(240,238,232,0.4)",letterSpacing:"0.1em",marginBottom:6,textTransform:"uppercase"}}>{children}</div>; }
 function TextInput({label,value,onChange,placeholder}){ return <div style={{marginBottom:12}}>{label&&<Label>{label}</Label>}<input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} style={inputStyle}/></div>; }
-function TextArea({label,value,onChange,rows=3,placeholder}){ return <div style={{marginBottom:12}}>{label&&<Label>{label}</Label>}<textarea value={value} onChange={e=>onChange(e.target.value)} rows={rows} placeholder={placeholder} style={{...inputStyle,resize:"none",lineHeight:1.6}}/></div>; }
-function ActionBtn({children,color="#F0B429",onClick}){ return <button onClick={onClick} style={{width:"100%",padding:"12px",borderRadius:11,background:`${color}20`,border:`1px solid ${color}50`,color,fontSize:13,fontWeight:700,cursor:"pointer",marginTop:4}}>{children}</button>; }
-function SectionTitle({children,color="#F0B429"}){ return <div style={{fontWeight:700,fontSize:16,color,marginBottom:14}}>{children}</div>; }
 function Modal({children,onClose,title}){
   return (
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,0.75)",display:"flex",alignItems:"flex-end",zIndex:300}} onClick={e=>e.target===e.currentTarget&&onClose()}>
@@ -694,6 +679,7 @@ export default function CORLYApp() {
     {id:"kpi",     icon:"👑",  label:"KPI"},
     {id:"filter",  icon:"🌬️", label:"台帳"},
     {id:"daily",   icon:"📝",  label:"日報"},
+    {id:"journal", icon:"📔",  label:"ジャーナル"},
   ];
 
   return (
@@ -790,6 +776,7 @@ export default function CORLYApp() {
         {screen==="kpi"      && <div style={{flex:1,overflowY:"auto"}}><KPIScreen targets={targets}/></div>}
         {screen==="filter"   && <div style={{flex:1,overflowY:"auto"}}><FilterScreen targets={targets}/></div>}
         {screen==="daily"    && <div style={{flex:1,overflowY:"auto"}}><DailyReportScreen/></div>}
+        {screen==="journal"  && <div style={{flex:1,overflowY:"auto"}}><JournalScreen/></div>}
       </div>
 
       {/* BOTTOM NAV */}
