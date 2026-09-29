@@ -27,10 +27,13 @@ var CORLY_SHEETS = {
     "商材コード","商材名","単価","単位","原価","条件","区分","更新日"
   ],
   "承認待ち": [
-    "依頼日時","役職","行為","宛先","内容","下書きの場所","理由","リスク","状態","岩崎メモ","処理日時"
+    "依頼ID","依頼日時","役職","行為","宛先（取引先ID）","宛先名","内容","下書きの場所","理由","リスク","状態","岩崎メモ","処理日時"
   ],
   "日報": [
     "日付","訪問","架電","メール送信","DM送信","アポ獲得","成約","所感","明日のアクション","記録者"
+  ],
+  "運用ログ": [
+    "日時","役職","実行内容","結果","件数","備考"
   ]
 };
 
@@ -62,6 +65,14 @@ var CORLY_VALIDATIONS = {
 function setupCorlySheets() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var created = [];
+  // CSV から作った先頭シート（A1 が「取引先ID」）は「取引先」に改名して流用する
+  ss.getSheets().forEach(function (sh) {
+    if (sh.getName() !== "取引先" && sh.getLastRow() > 0 && sh.getRange(1, 1).getValue() === "取引先ID" && !ss.getSheetByName("取引先")) {
+      sh.setName("取引先");
+      sh.setFrozenRows(1);
+      sh.getRange(1, 1, 1, sh.getLastColumn()).setFontWeight("bold");
+    }
+  });
   Object.keys(CORLY_SHEETS).forEach(function (name) {
     if (ss.getSheetByName(name)) return;
     var sheet = ss.insertSheet(name);
