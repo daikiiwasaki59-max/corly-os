@@ -8,3 +8,4 @@ Google Sheets の書き込み権限が直るまで、夜間部隊はここに書
 - `calllists/YYYY-MM-DD.csv` 翌日のコールリスト（夜が作る。朝はそのまま載せる）
 - `drafts/` フォロー・返信の下書き本文
 - 取引先の正データ: `docs/research/pm-list-osaka-master.csv`（管理会社）と `docs/research/fuel-prospects-osaka-hanshin.csv`（燃料）。ステージ・最終接触日はここを更新する。
+  - 取引先IDの割当: C000001〜C000204 管理会社（初回）、C000205〜C000246 燃料42社（シート側。CSVには未記入）、**C000247〜C000302 北摂名簿v2の56社（2026-09-30 取込、シート未反映）**。次の新規は C000303 から。シートへは Sheets 権限が直り次第、この56行を追記する。
