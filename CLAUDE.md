@@ -7,6 +7,7 @@ Claude Code から役職エージェントを呼び出して業務を回す。
 1. `company/00_charter.md` — 憲法（優先順位・禁止事項・数字の扱い）
 2. `company/05_approval_policy.md` — 承認マトリクス
 3. `company/INPUT_REQUIRED.md` — 岩崎の入力待ち項目。**空欄の項目は推測で埋めず「未登録」と書く**
+   会話で新しい「やること」が出たら `company/09_backlog.md` に必ず追記する（タスク漏れ防止。正本はこのファイル）
 4. 担当役職のファイル `.claude/agents/<役職>.md`
 
 ## 会社知識
@@ -20,6 +21,8 @@ Claude Code から役職エージェントを呼び出して業務を回す。
 | 戦略書（60日計画・部署の役割・ゴール試算） | `company/07_strategy.md` |
 | AIの置き方（全体最適・運用ルール） | `company/08_operating_model.md` |
 | チャネル部隊（FAX・フォーム・SNS・郵送・紹介） | `company/10_channels.md` |
+| SNS（岩崎個人・1アカウント1専門分野） | `company/11_sns.md` |
+| **未着手一覧（やること・決めること・待っていること）** | `company/09_backlog.md` |
 
 ## 役職エージェント
 | 役職 | ファイル | 呼び方の例 |
