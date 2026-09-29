@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>サブスク管理</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#6b7280;--line:#e5e7eb;--card:#f8fafc;--pri:#2563eb;--warn:#b45309;--warnbg:#fef3c7;--bad:#b91c1c}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#eee;--mut:#9ca3af;--line:#2a2a2a;--card:#1a1a1a;--warnbg:#3b2e0a;--warn:#fbbf24;--bad:#f87171}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:16px}h1{font-size:20px;margin:0 0 12px}h2{font-size:16px;margin:20px 0 8px}
+input,select,textarea,button{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+button{cursor:pointer}button.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+.sum{display:flex;gap:10px;flex-wrap:wrap}.box{flex:1;min-width:140px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.box b{display:block;font-size:22px}.mut{color:var(--mut);font-size:13px}
+.alert{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:8px 12px;margin:8px 0}
+.item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--card)}
+.item.rev{border-color:var(--bad)}.row{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.tag{font-size:12px;color:var(--bad);border:1px solid var(--bad);border-radius:99px;padding:0 8px}
+form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}form .full{grid-column:1/-1}
+textarea{width:100%;min-height:90px}details{margin:12px 0}summary{cursor:pointer}
+a{color:var(--pri)}
+</style>
+</head>
+<body><div class="w">
+<h1>サブスク管理（個人用・端末内のみ保存）</h1>
+<div class="sum">
+  <div class="box"><span class="mut">月額換算 合計（入力値の集計）</span><b id="m">-</b></div>
+  <div class="box"><span class="mut">年額換算 合計（入力値の集計）</span><b id="y">-</b></div>
+  <div class="box"><span class="mut">見直し候補</span><b id="r">-</b></div>
+</div>
+<div id="alerts"></div>
+
+<h2>登録済み（次回更新日が近い順）</h2>
+<div id="list"></div>
+
+<details open><summary><b>＋ 追加 / 編集</b></summary>
+<form id="f">
+  <input name="name" placeholder="サービス名" required>
+  <input name="amount" type="number" min="0" step="1" placeholder="金額（円）" required>
+  <select name="cycle"><option value="1">毎月</option><option value="3">3か月ごと</option><option value="12">毎年</option></select>
+  <label class="mut">次回更新日<input name="next" type="date" required></label>
+  <input name="pay" placeholder="支払い方法（例: カードA）">
+  <label class="mut">最終利用日<input name="used" type="date"></label>
+  <label><input name="unused" type="checkbox"> もう使っていない</label>
+  <input name="url" class="full" placeholder="解約ページのURL（任意）">
+  <input name="note" class="full" placeholder="メモ・解約手順・解約期限など">
+  <input name="id" type="hidden">
+  <button class="pri full">保存</button>
+</form></details>
+
+<details><summary><b>カード明細から定期課金の候補を探す</b></summary>
+<p class="mut">カード会社の明細を、日付・内容・金額が同じ行に入った形でコピーして貼り付けます（CSVの中身のコピペ）。外部には送信されません。同じ内容・同じ金額が約1か月または約1年おきに出る行を候補にします。候補は推定です。登録するかはご自身で判断してください。</p>
+<textarea id="csv" placeholder="2026/07/05,ABC MUSIC,980&#10;2026/08/05,ABC MUSIC,980"></textarea>
+<button id="scan">候補を探す</button><div id="cand"></div></details>
+
+<details><summary><b>バックアップ / 設定</b></summary>
+<p><button id="exp">JSONで書き出し</button> <label class="mut">読み込み <input id="imp" type="file" accept=".json"></label></p>
+<p class="mut">見直し候補にする未使用日数（仮置き。自分に合う日数に変更）: <input id="days" type="number" min="1" value="60" style="width:80px"> 日</p>
+<p class="mut">端末を失うと、書き出していないデータは失われます。定期的に書き出してください。</p></details>
+</div>
+<script>
+const $=s=>document.querySelector(s),yen=n=>"¥"+Math.round(n).toLocaleString("ja-JP");
+let subs=[],days=60;
+try{subs=JSON.parse(localStorage.getItem("subs")||"[]");days=+localStorage.getItem("days")||60}catch{}
+const save=()=>{try{localStorage.setItem("subs",JSON.stringify(subs));localStorage.setItem("days",days)}catch{}};
+const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+function nextDue(s){let d=new Date(s.next+"T00:00:00");const t=today();
+  while(d<t){d.setMonth(d.getMonth()+ +s.cycle)}return d}
+const fmt=d=>d.toLocaleDateString("ja-JP",{year:"numeric",month:"numeric",day:"numeric"});
+const dayDiff=d=>Math.round((d-today())/864e5);
+function review(s){if(s.unused)return"使っていない";
+  if(s.used){const g=Math.round((today()-new Date(s.used+"T00:00:00"))/864e5);if(g>=days)return`最終利用から${g}日`}return""}
+function render(){
+  const rows=subs.map(s=>({s,d:nextDue(s),rv:review(s)})).sort((a,b)=>a.d-b.d);
+  const mo=subs.reduce((a,s)=>a+s.amount/s.cycle,0);
+  $("#m").textContent=yen(mo);$("#y").textContent=yen(mo*12);
+  $("#r").textContent=rows.filter(r=>r.rv).length+"件（"+yen(rows.filter(r=>r.rv).reduce((a,r)=>a+r.s.amount/r.s.cycle,0))+"/月）";
+  $("#alerts").replaceChildren(...rows.filter(r=>dayDiff(r.d)<=7).map(r=>{const e=document.createElement("div");e.className="alert";
+    e.textContent=`${r.s.name}：${dayDiff(r.d)===0?"今日":dayDiff(r.d)+"日後"}に更新（${yen(r.s.amount)}）。不要なら更新前に解約`;return e}));
+  $("#list").replaceChildren(...rows.map(({s,d,rv})=>{const e=document.createElement("div");e.className="item"+(rv?" rev":"");
+    const top=document.createElement("div");top.className="row";
+    const n=document.createElement("b");n.textContent=s.name;top.append(n);
+    if(rv){const t=document.createElement("span");t.className="tag";t.textContent="見直し："+rv;top.append(t)}
+    const p=document.createElement("span");p.textContent=`${yen(s.amount)} / ${s.cycle==1?"月":s.cycle==3?"3か月":"年"}`;top.append(p);
+    const m=document.createElement("div");m.className="mut";m.textContent=`次回 ${fmt(d)}（${dayDiff(d)}日後）${s.pay?" ・"+s.pay:""}${s.note?" ・"+s.note:""}`;
+    e.append(top,m);
+    if(/^https?:\/\//.test(s.url||"")){const a=document.createElement("a");a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent="解約ページ";e.append(a," ")}
+    const ed=document.createElement("button");ed.textContent="編集";ed.onclick=()=>{const f=$("#f");for(const k of["name","amount","cycle","next","pay","used","url","note","id"])f[k].value=s[k]??"";f.unused.checked=!!s.unused;f.scrollIntoView()};
+    const dl=document.createElement("button");dl.textContent="削除";dl.onclick=()=>{if(confirm(s.name+"を削除しますか？")){subs=subs.filter(x=>x.id!==s.id);save();render()}};
+    e.append(ed," ",dl);return e}));
+}
+$("#f").onsubmit=e=>{e.preventDefault();const f=e.target;
+  const o={id:f.id.value||crypto.randomUUID(),name:f.name.value.trim(),amount:+f.amount.value,cycle:+f.cycle.value,next:f.next.value,pay:f.pay.value,used:f.used.value,unused:f.unused.checked,url:f.url.value.trim(),note:f.note.value};
+  const i=subs.findIndex(x=>x.id===o.id);i>=0?subs[i]=o:subs.push(o);save();f.reset();f.id.value="";render()};
+$("#days").value=days;$("#days").onchange=e=>{days=Math.max(1,+e.target.value||60);save();render()};
+
+// 明細から定期課金候補: 同一内容・同一金額で、間隔が約1か月(25〜35日)または約1年(350〜380日)
+$("#scan").onclick=()=>{
+  const g={};
+  for(const line of $("#csv").value.split(/\r?\n/)){
+    const c=line.split(/[,\t]/).map(x=>x.replace(/^"|"$/g,"").trim());
+    const dm=c.map(x=>x.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})$/)).find(Boolean);
+    const am=c.map(x=>x.replace(/[¥￥,\s円]/g,"")).filter(x=>/^\d+$/.test(x)).pop();
+    const nm=c.find(x=>x&&!/^[\d\/\-.¥￥,円\s]+$/.test(x));
+    if(!dm||!am||!nm)continue;
+    const k=nm+"|"+am;(g[k]=g[k]||[]).push(new Date(+dm[1],+dm[2]-1,+dm[3]));
+  }
+  const out=[];
+  for(const [k,ds] of Object.entries(g)){ds.sort((a,b)=>a-b);if(ds.length<2)continue;
+    const gaps=ds.slice(1).map((d,i)=>Math.round((d-ds[i])/864e5));
+    const mon=gaps.every(x=>x>=25&&x<=35),yr=gaps.every(x=>x>=350&&x<=380);
+    if(mon||yr){const [nm,am]=k.split("|");const last=ds[ds.length-1];const nx=new Date(last);nx.setMonth(nx.getMonth()+(mon?1:12));
+      out.push({nm,am:+am,cycle:mon?1:12,next:nx.toISOString().slice(0,10),n:ds.length})}}
+  $("#cand").replaceChildren(...(out.length?out:[null]).map(c=>{const e=document.createElement("div");e.className="item";
+    if(!c){e.textContent="候補は見つかりませんでした（同一内容・同一金額が2回以上、約1か月/1年おきに並ぶ行が必要です）";return e}
+    e.textContent=`${c.nm}　${yen(c.am)}／${c.cycle==1?"月":"年"}（${c.n}回検出・推定）　`;
+    const b=document.createElement("button");b.textContent="この内容で追加";b.onclick=()=>{subs.push({id:crypto.randomUUID(),name:c.nm,amount:c.am,cycle:c.cycle,next:c.next,pay:"",used:"",unused:false,url:"",note:"明細から推定"});save();render();b.disabled=true};
+    e.append(b);return e}))};
+
+$("#exp").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify({subs,days},null,1)],{type:"application/json"}));a.download="subs-backup.json";a.click()};
+$("#imp").onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.subs))throw 0;subs=d.subs;days=d.days||60;save();$("#days").value=days;render()}catch{alert("読み込めないファイルです")}};r.readAsText(e.target.files[0])};
+render();
+</script></body></html>
