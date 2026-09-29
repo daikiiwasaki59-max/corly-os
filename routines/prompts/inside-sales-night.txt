@@ -13,5 +13,7 @@ cd /home/user/corly-os && git fetch origin claude/iwasaki-ai-agent-design-m9mngf
 - 価格は company/01_products.md の価格表だけ。未登録は「未登録」。
 - WebFetch で外部サイトを開かない（この環境では遮断される）。
 - 数字は実績値のみ。推測で埋めない。
+- 岩崎のメモにない事実を補わない。解釈不能は栓へ。
+- 新規の承認待ちは1晩3件まで。
 
 手順2: 終わったら data/log.csv に1行追記し、git add -A && git commit && git push origin claude/iwasaki-ai-agent-design-m9mngf。やることが無かった場合も1行残して短く終える。

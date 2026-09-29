@@ -10,6 +10,9 @@ git pull --ff-only origin claude/iwasaki-ai-agent-design-m9mngf
 ```
 `main` に統合済みなら `main` を使う（`git branch -r` で確認）。
 
+### 0-2. Drive バックアップの取り込み
+前回 push に失敗していると Google Drive「CORLY OS/部隊バックアップ/YYYY-MM-DD/」に CSV が置かれている。あればリポジトリへ取り込んでから作業する（取り込み後は log に1行）。
+
 ## 1. 読む順
 `CLAUDE.md` → `company/00_charter.md` → `company/05_approval_policy.md` → 担当役職 `.claude/agents/<役職>.md` → 自分のルーティン `routines/<名前>.md`。
 
@@ -25,6 +28,10 @@ git pull --ff-only origin claude/iwasaki-ai-agent-design-m9mngf
 - 連絡NG＝TRUE、配送業者の既存顧客には触れない。
 - 実在企業・統計値を推測で書かない。数字は「実績値」か「仮置き」。
 - 1回の実行で送るメールは最大5通（仮置き）。それ以上は翌日。
+- 連絡NG を立てるのは AI でもよいが、**解除は岩崎の行（`C0… NG解除 <理由>`）だけ**。
+- 電話番号の補完は WebSearch のみ、1晩10社まで。WebFetch は使わない（遮断される）。
+- 岩崎のメモにない事実を補わない。解釈できない行は推測で埋めず「解釈不能」として朝の栓へ。
+- 新規の承認待ちは1晩3件まで、未処理が5件を超えたら新規作成を止める（仮置き。会議Cの上限）。朝の1通は本文の読みどころが20行以内に収まるよう、各社4行以内。岩崎への質問は1日1問まで。
 
 ## 4. 岩崎への連絡
 Gmail `send_message` で daikiiwasaki59@gmail.com 宛。件名は各ルーティンで固定。本文はプレーンテキスト、結論から。Markdown 記法は使わない。

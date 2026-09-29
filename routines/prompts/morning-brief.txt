@@ -8,4 +8,4 @@ cd /home/user/corly-os && git fetch origin claude/iwasaki-ai-agent-design-m9mngf
 
 手順2: 終わったら data/log.csv に1行追記し、git add -A && git commit && git push origin claude/iwasaki-ai-agent-design-m9mngf。
 
-厳守: 数字は実績値のみ。推測で埋めない。結論から書く。前置き・お世辞なし。
+厳守: 数字は実績値のみ。推測で埋めない。結論から書く。前置き・お世辞なし。コールリストを作らない・並べ替えない（夜の仕事）。WebSearch もしない。
