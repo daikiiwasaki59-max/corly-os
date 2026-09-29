@@ -74,7 +74,8 @@
 - [ ] 1日の活動目標（訪問・架電・メール・DM・フォロー）
 
 ## 6. ツール
-- [ ] スプレッドシート「CORLY OS」のURL（`setup-sheets.gs` 実行後）
+- [x] スプレッドシート「CORLY OS」→ https://docs.google.com/spreadsheets/d/1I-rxCFFqFxCbDFgtviRyRFavgOEwKFFhZdKG5MQ17uY/edit（2026-09-29 作成。取引先246社を投入済み。**残り7シートは `setup-sheets.gs` を1回実行して作る**）
+- [ ] Google Sheets コネクタの権限（スコープ）不足。claude.ai/customize/connectors で Sheets を接続し直し、スプレッドシートの読み書きを許可する。直るまで部隊はリポジトリに書く
 - [ ] freee で使っている機能（会計 / 請求書）と会社ID
 - [ ] LINE 公式アカウント（段階1で作成。Messaging API のチャネルトークンは Apps Script のプロパティに保存し、リポジトリには置かない）
 - [ ] Google ドライブの書類フォルダ（契約書・見積ひな形の場所）

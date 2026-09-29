@@ -14,7 +14,7 @@ git pull --ff-only origin claude/iwasaki-ai-agent-design-m9mngf
 `CLAUDE.md` → `company/00_charter.md` → `company/05_approval_policy.md` → 担当役職 `.claude/agents/<役職>.md` → 自分のルーティン `routines/<名前>.md`。
 
 ## 2. 正データの場所（優先順）
-1. Google Sheets「CORLY OS」（ID: 後述）。Sheets ツールで `get_values` / `update_values` が使えるならこちら。
+1. Google Sheets「CORLY OS」（ID: `1I-rxCFFqFxCbDFgtviRyRFavgOEwKFFhZdKG5MQ17uY`、https://docs.google.com/spreadsheets/d/1I-rxCFFqFxCbDFgtviRyRFavgOEwKFFhZdKG5MQ17uY/edit）。先頭シートが取引先（246社）。Sheets ツールで `get_values` / `update_values` が使えるならこちら。
 2. 使えない（Insufficient scope 等）なら **リポジトリの `data/` と `docs/research/*.csv`** に書き、`git commit` → `git push origin <branch>` する。
 3. どちらに書いたかを `data/log.csv` に残す。
 

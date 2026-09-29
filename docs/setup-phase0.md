@@ -3,7 +3,8 @@
 所要: 岩崎の作業 30分程度（仮置き）。
 
 ## 1. スプレッドシート「CORLY OS」を作る
-1. Google スプレッドシートを新規作成し、名前を「CORLY OS」にする。
+**2026-09-29: 作成済み。** https://docs.google.com/spreadsheets/d/1I-rxCFFqFxCbDFgtviRyRFavgOEwKFFhZdKG5MQ17uY/edit 。取引先246社（管理会社204＋燃料候補42）が先頭シートに入っている。残りのシートを作るため、以下の 2〜5 だけ行う。
+1. ~~Google スプレッドシートを新規作成し、名前を「CORLY OS」にする。~~
 2. メニュー [拡張機能] → [Apps Script] を開く。
 3. `コード.gs` の中身を全て消し、このリポジトリの `apps-script/setup-sheets.gs` を貼り付けて保存する。
 4. 関数の選択で `setupCorlySheets` を選び、[実行]。権限の承認画面が出たら自分の Google アカウントで承認する。

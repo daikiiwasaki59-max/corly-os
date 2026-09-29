@@ -55,5 +55,5 @@
 ## いまの状態
 - 会社知識: できている（`company/` 8ファイル）
 - 役職エージェント: できている（`.claude/agents/` 5体）
-- **正データ: 空**。スプレッドシートが未作成。取引先204社と燃料候補42社はリポジトリの CSV に止まっている。
-- → **中心が空なので、まだ部分最適の段階**。`docs/setup-phase0.md` の手順でスプレッドシートを作ると、そこで初めて全体最適の形になる。
+- 正データ: **スプレッドシート「CORLY OS」を 2026-09-29 に作成し、取引先246社を投入**（https://docs.google.com/spreadsheets/d/1I-rxCFFqFxCbDFgtviRyRFavgOEwKFFhZdKG5MQ17uY/edit）。ただし Sheets コネクタの書込権限が不足しており、夜間部隊はリポジトリ `data/` に書いて commit する（`routines/_common.md` §2）。権限が直った時点でシートへ切り替える。
+- 夜間部隊: `routines/` の3本（朝の1通・夜のインサイド・週次レビュー）を定期実行として登録。

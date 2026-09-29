@@ -3,7 +3,8 @@
 ## 正データ
 | 種類 | 場所 | 区分 |
 |---|---|---|
-| 取引先・案件・活動・見積・承認待ち・日報・価格表 | Google スプレッドシート「CORLY OS」1冊 | 岩崎回答（2026-09-11） |
+| 取引先・案件・活動・見積・承認待ち・日報・価格表 | Google スプレッドシート「CORLY OS」1冊（作成済み 2026-09-29。ID `1I-rxCFFqFxCbDFgtviRyRFavgOEwKFFhZdKG5MQ17uY`、https://docs.google.com/spreadsheets/d/1I-rxCFFqFxCbDFgtviRyRFavgOEwKFFhZdKG5MQ17uY/edit） | 岩崎回答（2026-09-11） |
+| 上記の一時的な代替（Sheets の書込権限が直るまで） | リポジトリ `data/`（承認待ち・運用ログ）と `docs/research/*.csv`（取引先） | 2026-09-29 の判断 |
 | 会計・請求書 | freee（会計・請求書）。他サービスで代替可 | 岩崎回答 |
 | 会社知識 | このリポジトリ `company/` | — |
 
