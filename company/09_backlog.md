@@ -1,6 +1,7 @@
 # 09 未着手一覧（いつでも見る場所）
 
 会話の中で出た「やること」で、まだ終わっていないものを全部ここに置く。**正本はこのファイル**。朝の1通に件数だけ載せる。終わったら消さず「済」に移す（月1でexecが整理）。
+携帯で見る用のページ: https://claude.ai/artifact/JNJVwDGCaPMB9xBEMxbFse （`python3 scripts/backlog_page.py` で `docs/backlog.html` を作り直して再公開。中身はこのファイルから生成）。
 更新: 2026-09-30
 
 ## A. 岩崎がやること（営業に効く順）
