@@ -31,13 +31,23 @@
 
 この環境からは corly.co.jp に直接アクセスできなかった（ネットワーク制限）。事実は検索エンジンのスニペットから拾っているため、**公開前に本人確認必須**。
 
-## 3. デザイン方針（第3版・2026-09-09）
+## 3. デザイン方針（第4版・2026-09-30）
 
-- 参照構成: 庄栄興産株式会社のサイト（bigpengold.com）と同じ「トップ／サービス別ページ／会社概要／お問い合わせ／プライバシーポリシー」の一般的な企業サイト型。
-- 白ベース。文字は黒、アクセントにロゴの水色 `#5CE1E6`（ボタン・下線）と、文字用の濃い水色 `#0FA3A8`。
-- フォントは Noto Sans JP のみ。派手な演出なし（スクロール時の軽いフェードのみ）。
-- 掲載は清掃事業のみ: 空室清掃 / 日常・定期清掃 / 店舗・飲食店清掃（グリストラップ）。
-- 写真は全てグレーの仮枠（SVG）。同名の JPG に差し替えれば反映される（§4-2）。
+目標水準: Awwwards / FWA 級の「編集デザイン」寄りの企業サイト。構成は第3版（庄栄興産型）を維持し、表現だけを引き上げた。
+
+- ページ構成: トップ／空室清掃／日常・定期清掃／店舗・飲食店清掃／会社概要／お問い合わせ／プライバシーポリシー（変更なし）。
+- 色: 紙のような白 `#FAFBFB` を地に、文字は墨 `#0E1216`。水色はロゴの `#5CE1E6` を面（マーカー・ボタン・帯）に、文字用に濃い `#0B8F94`。黒背景は CTA 帯の1箇所のみ。
+- 書体: 見出し・本文 Zen Kaku Gothic New（900/700/500/400）、英字ラベル・数字 Manrope（800/700）。Google Fonts 経由（CSP で許可済み）。
+- 象徴物: **作業報告書のカード**（物件・作業・担当・BEFORE/AFTER・確認項目）をトップの Hero と REPORT セクションに置き、「写真で証明する」という主張を物で見せる。内容は SAMPLE 表記。
+- 動き: 見出しのマスク出現、画像のクリップ出現、Hero 画像の軽いパララックス、サービス名のマーキー、ご依頼の流れの進捗線、ボタンの塗り替わり。全て素の JS/CSS（外部ライブラリなし）。`prefers-reduced-motion` で全停止。
+- 大見出し「きれいを、写真で証明する清掃会社。」は **仮置き（コピー案）**。SEO 用の説明文（大阪・関西の空室清掃…）は lead に残している。
+- 写真: `work1` のみ実写（CC0）。他は **AI生成の仮画像**（人物なし・実在の建物なし）。公開前に実写へ差し替える。詳細は `photos-inbox/CREDITS.md`。
+- プレビュー: `node scripts/build-preview.mjs <出力先>` で全ページを1ファイルに束ねた HTML を生成（Artifact 用。ハッシュでページ切替）。
+
+### 3-1. 第4版の自己チェックで直した点
+- スクロール出現の対象に `clip-path` を付けると IntersectionObserver が「面積ゼロ」とみなし発火しない → クリップは内側の `img` に付ける。
+- 日本語見出しの不自然な改行 → `word-break:auto-phrase` と手動 `<br>`。
+- スマホの「ご依頼の流れ」は縦タイムラインに変更。
 
 ## 4. ファイル構成
 
@@ -54,8 +64,9 @@ site/
   contact.php     フォーム受信 → info@corly.co.jp
   .htaccess / robots.txt / sitemap.xml
   assets/site.css, site.js
-  assets/img/     logo-color.png, logo-white.png, logo-symbol.png, favicon.png, ph-*.svg（仮写真）
+  assets/img/     logo-color.png, logo-white.png, logo-symbol.png, favicon.png, ph-*.jpg（写真。無ければ ph-*.svg の仮枠）
 scripts/build-site-pages.mjs   8ページを共通ヘッダー/フッターから生成するスクリプト（node scripts/build-site-pages.mjs）
+scripts/build-preview.mjs      全ページを1ファイルに束ねたプレビューHTMLを生成（Artifact 用）
 ```
 
 ### 4-1. 文言を直すとき
