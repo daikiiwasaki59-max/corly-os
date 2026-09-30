@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>家計簿・資産形成</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--mut:#6b7280;--line:#e5e7eb;--card:#f8fafc;--pri:#2563eb;--ok:#15803d;--bad:#b91c1c;--bar:#93c5fd}
+@media(prefers-color-scheme:dark){:root{--bg:#111;--fg:#eee;--mut:#9ca3af;--line:#2a2a2a;--card:#1a1a1a;--ok:#4ade80;--bad:#f87171;--bar:#1d4ed8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,sans-serif}
+.w{max-width:720px;margin:0 auto;padding:16px}h1{font-size:20px;margin:0 0 8px}h2{font-size:16px;margin:18px 0 8px}
+input,select,button{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;max-width:100%}
+button{cursor:pointer}button.pri{background:var(--pri);color:#fff;border-color:var(--pri)}
+nav{display:flex;gap:6px;margin:8px 0}nav button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.sum{display:flex;gap:8px;flex-wrap:wrap}.box{flex:1;min-width:130px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.box b{display:block;font-size:20px}.mut{color:var(--mut);font-size:13px}.ok{color:var(--ok)}.bad{color:var(--bad)}
+.cat{margin:6px 0}.cat .t{display:flex;justify-content:space-between;gap:8px}.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--bar)}.bar i.over{background:var(--bad)}
+form,.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.full{grid-column:1/-1}
+.tx{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid var(--line)}
+.note{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14px}
+label{font-size:13px;color:var(--mut)}label input,label select{display:block;width:100%;color:var(--fg)}
+</style></head>
+<body><div class="w">
+<h1>家計簿・資産形成（個人用・端末内のみ保存）</h1>
+<nav><button data-p="mo" class="on">今月</button><button data-p="in">入力</button><button data-p="plan">資産計画</button><button data-p="set">設定</button></nav>
+
+<section id="mo">
+  <label>月 <input type="month" id="mon"></label>
+  <div class="sum" style="margin-top:8px">
+    <div class="box"><span class="mut">収入（入力値）</span><b id="inc">-</b></div>
+    <div class="box"><span class="mut">支出（入力値）</span><b id="exp">-</b></div>
+    <div class="box"><span class="mut">収支</span><b id="bal">-</b></div>
+    <div class="box"><span class="mut">貯蓄率（収支÷収入）</span><b id="rate">-</b></div>
+  </div>
+  <h2>何に使っているか（カテゴリ別）</h2><div id="cats"></div>
+  <h2>明細</h2><div id="txs"></div>
+</section>
+
+<section id="in" hidden>
+  <form id="f">
+    <select name="type"><option value="expense">支出</option><option value="income">収入</option></select>
+    <input name="date" type="date" required><input name="amount" type="number" min="1" step="1" placeholder="金額（円）" required>
+    <select name="cat"></select><input name="memo" placeholder="メモ（任意）" class="full">
+    <button class="pri full">追加</button>
+  </form>
+  <p class="mut">収入のカテゴリは集計に使いません。</p>
+</section>
+
+<section id="plan" hidden>
+  <h2>目標を入れる</h2>
+  <div class="grid">
+    <label>現在の資産（円・実績を入力）<input id="pv" type="number" min="0" value="0"></label>
+    <label>目標額（円）<input id="tg" type="number" min="0" placeholder="例: 入力してください"></label>
+    <label>目標日<input id="td" type="date"></label>
+    <label>想定年利（％・仮置き。0は運用しない前提）<input id="ir" type="number" step="0.1" min="0" value="0"></label>
+    <label>生活防衛資金の月数（仮置き）<input id="em" type="number" min="0" value="6"></label>
+  </div>
+  <div id="out"></div>
+  <div class="note">利回りは将来を保証しません。投資は元本割れがあり得ます。NISA・iDeCo・税金・保険の判断は、ファイナンシャルプランナーや税理士など専門家に確認してください。ここでの計算は、入力値からの単純計算（月次複利）です。</div>
+</section>
+
+<section id="set" hidden>
+  <h2>カテゴリと月の予算（任意）</h2><div id="catset"></div>
+  <p><input id="newcat" placeholder="カテゴリ追加"> <button id="addcat">追加</button></p>
+  <h2>バックアップ</h2>
+  <p><button id="exp2">JSONで書き出し</button> <label>読み込み <input id="imp" type="file" accept=".json"></label></p>
+  <p class="mut">端末を失うと、書き出していないデータは失われます。</p>
+</section>
+</div>
+<script>
+const $=s=>document.querySelector(s),yen=n=>(n<0?"-":"")+"¥"+Math.round(Math.abs(n)).toLocaleString("ja-JP");
+const DEF=["食費","日用品","交通","住居","光熱費","通信","サブスク","医療","娯楽","衣服","その他"];
+let D={tx:[],cats:DEF.map(n=>({n,b:0})),plan:{}};
+try{const s=JSON.parse(localStorage.getItem("kakeibo")||"null");if(s&&s.tx)D=s}catch{}
+const save=()=>{try{localStorage.setItem("kakeibo",JSON.stringify(D))}catch{}};
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const ym=d=>d.slice(0,7);
+const now=new Date(),cm=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+$("#mon").value=cm;$("#f").date.value=now.toISOString().slice(0,10);
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));
+  for(const p of["mo","in","plan","set"])$("#"+p).hidden=p!==b.dataset.p;render()});
+
+function monthSum(m){const t=D.tx.filter(x=>ym(x.date)===m);
+  return{inc:t.filter(x=>x.type==="income").reduce((a,x)=>a+x.amount,0),exp:t.filter(x=>x.type==="expense").reduce((a,x)=>a+x.amount,0),t}}
+
+function renderMonth(){
+  const m=$("#mon").value||cm,s=monthSum(m);
+  $("#inc").textContent=yen(s.inc);$("#exp").textContent=yen(s.exp);
+  const bal=s.inc-s.exp;$("#bal").textContent=yen(bal);$("#bal").className=bal>=0?"ok":"bad";
+  $("#rate").textContent=s.inc>0?Math.round(bal/s.inc*100)+"%":"収入未入力";
+  const by={};s.t.filter(x=>x.type==="expense").forEach(x=>by[x.cat]=(by[x.cat]||0)+x.amount);
+  const max=Math.max(1,...Object.values(by));
+  const rows=Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([c,v])=>{
+    const bud=(D.cats.find(x=>x.n===c)||{}).b||0,over=bud>0&&v>bud;
+    const d=el("div","cat"),t=el("div","t"),bar=el("div","bar"),i=el("i",over?"over":"");
+    t.append(el("span","",`${c}${s.exp?`（${Math.round(v/s.exp*100)}%）`:""}`),el("span",over?"bad":"",`${yen(v)}${bud?` / 予算${yen(bud)}`:""}`));
+    i.style.width=Math.round(v/max*100)+"%";bar.append(i);d.append(t,bar);return d});
+  $("#cats").replaceChildren(...(rows.length?rows:[el("div","mut","この月の支出はまだありません")]));
+  $("#txs").replaceChildren(...s.t.sort((a,b)=>b.date.localeCompare(a.date)).map(x=>{
+    const r=el("div","tx"),l=el("span","",`${x.date.slice(5)} ${x.type==="income"?"収入":x.cat}${x.memo?"・"+x.memo:""}`);
+    const rt=el("span");rt.append(el("span",x.type==="income"?"ok":"",(x.type==="income"?"+":"-")+yen(x.amount).replace("-","")+" "));
+    const b=el("button","","削除");b.onclick=()=>{D.tx=D.tx.filter(y=>y.id!==x.id);save();render()};rt.append(b);r.append(l,rt);return r}));
+}
+
+// 資産計画: 必要月額 P = (T - PV(1+i)^n) * i / ((1+i)^n - 1)  ／ i=0 なら (T-PV)/n
+function need(T,PV,r,n){const i=r/100/12;if(i===0)return Math.max(0,(T-PV)/n);
+  const g=Math.pow(1+i,n);return Math.max(0,(T-PV*g)*i/(g-1))}
+function recentSurplus(){ // 当月を除く直近最大3か月（データのある月）の平均収支
+  const ms=[...new Set(D.tx.map(x=>ym(x.date)).filter(m=>m<cm))].sort().slice(-3);
+  if(!ms.length)return null;const v=ms.map(m=>{const s=monthSum(m);return{m,sur:s.inc-s.exp,exp:s.exp}});
+  return{n:v.length,sur:v.reduce((a,x)=>a+x.sur,0)/v.length,exp:v.reduce((a,x)=>a+x.exp,0)/v.length}}
+function renderPlan(){
+  const P=D.plan;for(const[k,id]of[["pv","pv"],["tg","tg"],["td","td"],["ir","ir"],["em","em"]])if(P[k]!==undefined&&document.activeElement!==$("#"+id))$("#"+id).value=P[k];
+  const PV=+$("#pv").value||0,T=+$("#tg").value,r=+$("#ir").value||0,td=$("#td").value,em=+$("#em").value||0;
+  const out=[],rs=recentSurplus();
+  if(rs){out.push(row(`実績の平均収支（直近${rs.n}か月・入力値）`,yen(rs.sur)+"/月"));
+    if(em)out.push(row(`生活防衛資金の目安（平均支出${yen(rs.exp)}×${em}か月・仮置き）`,yen(rs.exp*em)))}
+  else out.push(el("div","mut","前月以前のデータがないため、実績の平均収支は未算出です（入力後に表示）"));
+  if(T>0&&td){const d=new Date(td+"T00:00:00"),n=(d.getFullYear()-now.getFullYear())*12+d.getMonth()-now.getMonth();
+    if(n<1)out.push(el("div","bad","目標日は来月以降にしてください"));
+    else{const p=need(T,PV,r,n);out.push(row(`目標${yen(T)}まで ${n}か月・年利${r}%の場合の必要貯蓄額`,yen(p)+"/月"));
+      if(r>0)out.push(row("参考：利回り0%（運用しない）の場合",yen(need(T,PV,0,n))+"/月"));
+      if(rs){const gap=p-rs.sur;out.push(row("実績の平均収支との差",(gap>0?"月 "+yen(gap)+" 不足":"月 "+yen(-gap)+" の余裕"),gap>0?"bad":"ok"))}}}
+  else out.push(el("div","mut","目標額と目標日を入れると、必要な毎月の貯蓄額を計算します"));
+  $("#out").replaceChildren(...out)}
+const row=(l,v,c)=>{const d=el("div","box");d.style.margin="6px 0";d.append(el("span","mut",l),el("b",c||"",v));return d};
+["pv","tg","td","ir","em"].forEach(id=>$("#"+id).oninput=()=>{D.plan={pv:$("#pv").value,tg:$("#tg").value,td:$("#td").value,ir:$("#ir").value,em:$("#em").value};save();renderPlan()});
+
+function renderSet(){
+  $("#catset").replaceChildren(...D.cats.map(c=>{const r=el("div","tx");r.append(el("span","",c.n));
+    const i=el("input");i.type="number";i.min=0;i.placeholder="月の予算（円）";i.value=c.b||"";i.onchange=()=>{c.b=+i.value||0;save()};r.append(i);return r}));
+  $("#f").cat.replaceChildren(...D.cats.map(c=>{const o=el("option","",c.n);o.value=c.n;return o}))}
+$("#addcat").onclick=()=>{const n=$("#newcat").value.trim();if(n&&!D.cats.some(c=>c.n===n)){D.cats.push({n,b:0});$("#newcat").value="";save();render()}};
+$("#f").onsubmit=e=>{e.preventDefault();const f=e.target;
+  D.tx.push({id:crypto.randomUUID(),type:f.type.value,date:f.date.value,amount:+f.amount.value,cat:f.cat.value,memo:f.memo.value});
+  save();f.amount.value="";f.memo.value="";$("#mon").value=ym(D.tx[D.tx.length-1].date);render();alert("追加しました")};
+$("#mon").onchange=render;
+$("#exp2").onclick=()=>{const a=el("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:"application/json"}));a.download="kakeibo-backup.json";a.click()};
+$("#imp").onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.tx)||!Array.isArray(d.cats))throw 0;D=d;save();render()}catch{alert("読み込めないファイルです")}};r.readAsText(e.target.files[0])};
+function render(){renderSet();renderMonth();renderPlan()}
+render();
+</script></body></html>
