@@ -155,8 +155,8 @@ $("#qparse").onclick=()=>{
   for(let raw of z($("#quick").value).split(/\r?\n/)){const l=raw.trim();if(!l)continue;
     const dm=l.match(/^(\d{1,2})[\/月](\d{1,2})日?$/);
     if(dm){d=now.getFullYear()+"-"+dm[1].padStart(2,"0")+"-"+dm[2].padStart(2,"0");continue}
-    const im=l.match(/^(.+?)\s*[¥￥]?(\d[\d,]*)\s*円?$/);
-    if(im)qitems.push({date:d,memo:im[1].trim(),amount:+im[2].replace(/,/g,""),cat:guess(im[1])});
+    const im=l.match(/^(.*?)[¥￥]?(\d[\d,]*)\s*円?(.*)$/);
+    if(im&&(im[1]+im[3]).trim())qitems.push({date:d,memo:(im[1]+" "+im[3]).trim(),amount:+im[2].replace(/,/g,""),cat:guess(im[1]+im[3])});
     else qitems.push({bad:l})}
   renderQ()};
 function renderQ(){
