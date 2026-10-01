@@ -37,6 +37,11 @@ label{font-size:13px;color:var(--mut)}label input,label select{display:block;wid
 </section>
 
 <section id="in" hidden>
+  <h2>まとめて入力（貼り付け）</h2>
+  <p class="mut">例：1行目に日付、以降は「品名 金額」。日付行が無ければ今日の日付になります。</p>
+  <textarea id="quick" style="width:100%;min-height:100px;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px" placeholder="10/1&#10;水108&#10;タバコ590"></textarea>
+  <p><button id="qparse">内容を確認</button></p><div id="qprev"></div>
+  <h2>1件ずつ入力</h2>
   <form id="f">
     <select name="type"><option value="expense">支出</option><option value="income">収入</option></select>
     <input name="date" type="date" required><input name="amount" type="number" min="1" step="1" placeholder="金額（円）" required>
@@ -69,7 +74,7 @@ label{font-size:13px;color:var(--mut)}label input,label select{display:block;wid
 </div>
 <script>
 const $=s=>document.querySelector(s),yen=n=>(n<0?"-":"")+"¥"+Math.round(Math.abs(n)).toLocaleString("ja-JP");
-const DEF=["食費","日用品","交通","住居","光熱費","通信","サブスク","医療","娯楽","衣服","その他"];
+const DEF=["食費","日用品","交通","住居","光熱費","通信","サブスク","医療","娯楽","衣服","嗜好品","その他"];
 let D={tx:[],cats:DEF.map(n=>({n,b:0})),plan:{}};
 try{const s=JSON.parse(localStorage.getItem("kakeibo")||"null");if(s&&s.tx)D=s}catch{}
 const save=()=>{try{localStorage.setItem("kakeibo",JSON.stringify(D))}catch{}};
@@ -139,6 +144,34 @@ $("#f").onsubmit=e=>{e.preventDefault();const f=e.target;
 $("#mon").onchange=render;
 $("#exp2").onclick=()=>{const a=el("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(D,null,1)],{type:"application/json"}));a.download="kakeibo-backup.json";a.click()};
 $("#imp").onchange=e=>{const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d.tx)||!Array.isArray(d.cats))throw 0;D=d;save();render()}catch{alert("読み込めないファイルです")}};r.readAsText(e.target.files[0])};
+
+// まとめて入力: 「10/1」の日付行 + 「品名 金額」の行。カテゴリはキーワードで推定（変更可）
+const KW=[["嗜好品",["タバコ","煙草","たばこ","酒","ビール"]],["食費",["水","お茶","コーヒー","弁当","パン","昼","夕","朝","飯","おにぎり","ジュース","ランチ"]],["交通",["電車","バス","タクシー","ガソリン","駐車"]],["日用品",["洗剤","ティッシュ","シャンプー","トイレ"]]];
+const guess=n=>{for(const[c,ws]of KW)if(ws.some(w=>n.includes(w)))return c;return"その他"};
+const z=t=>t.replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-65248));
+let qitems=[];
+$("#qparse").onclick=()=>{
+  let d=now.toISOString().slice(0,10);qitems=[];
+  for(let raw of z($("#quick").value).split(/\r?\n/)){const l=raw.trim();if(!l)continue;
+    const dm=l.match(/^(\d{1,2})[\/月](\d{1,2})日?$/);
+    if(dm){d=now.getFullYear()+"-"+dm[1].padStart(2,"0")+"-"+dm[2].padStart(2,"0");continue}
+    const im=l.match(/^(.+?)\s*[¥￥]?(\d[\d,]*)\s*円?$/);
+    if(im)qitems.push({date:d,memo:im[1].trim(),amount:+im[2].replace(/,/g,""),cat:guess(im[1])});
+    else qitems.push({bad:l})}
+  renderQ()};
+function renderQ(){
+  const rows=qitems.map((q,i)=>{const r=el("div","tx");
+    if(q.bad){r.append(el("span","bad","読み取れない行: "+q.bad));return r}
+    r.append(el("span","",`${q.date.slice(5).replace("-","/")} ${q.memo} ${yen(q.amount)}`));
+    const sel=el("select");const names=[...new Set([...D.cats.map(c=>c.n),q.cat])];
+    for(const n of names){const o=el("option","",n);o.value=n;sel.append(o)}sel.value=q.cat;sel.onchange=()=>q.cat=sel.value;r.append(sel);return r});
+  const ok=qitems.filter(q=>!q.bad);
+  if(ok.length){const b=el("button","pri",`${ok.length}件を登録（合計${yen(ok.reduce((a,q)=>a+q.amount,0))}）`);
+    b.onclick=()=>{for(const q of ok){if(!D.cats.some(c=>c.n===q.cat))D.cats.push({n:q.cat,b:0});
+      D.tx.push({id:crypto.randomUUID(),type:"expense",date:q.date,amount:q.amount,cat:q.cat,memo:q.memo})}
+      save();$("#mon").value=ok[0].date.slice(0,7);$("#quick").value="";qitems=[];$("#qprev").replaceChildren();render()};
+    rows.push(b)}
+  $("#qprev").replaceChildren(...rows)}
 function render(){renderSet();renderMonth();renderPlan()}
 render();
 </script></body></html>
