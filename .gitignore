@@ -1,1 +1,4 @@
 node_modules/
+
+# contact.php のローカルテストで生成されるレート制限ファイル
+contact-ratelimit/
