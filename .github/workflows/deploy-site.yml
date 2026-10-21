@@ -1,4 +1,4 @@
-# corly.co.jp を Xserver へ FTPS でデプロイする（手動実行のみ）
+# corly.co.jp を Xserver へ FTPS でデプロイする
 #
 # 事前に GitHub → Settings → Secrets and variables → Actions に登録:
 #   XSERVER_FTP_HOST      例: sv12345.xserver.jp
@@ -6,15 +6,24 @@
 #   XSERVER_FTP_PASSWORD  そのパスワード
 #   XSERVER_FTP_DIR       例: /corly.co.jp/public_html/   （末尾スラッシュ必須）
 #
+# 実行方法（どちらか）:
+#   A. Actions タブ → このワークフロー → Run workflow（人が押す）
+#   B. ブランチ deploy/corly-site に push する（連携アプリには Run workflow の権限がないため、
+#      Claude からはこちらで起動する。デプロイしたいコミットをこのブランチに push する）
+#
 # 注意:
 # - パスワードをコード・Issue・チャットに書かない。Secrets にだけ置く。
 # - Xserver「FTP制限設定」でIP制限を有効にしていると GitHub のランナーから接続できない。
 #   その場合は一時的に解除するか、手動アップロードに切り替える。
-# - dangerous-clean-slate は使わない（サーバ側の他ファイルを消さない）。
+# - dangerous-clean-slate は使わない（サーバ側の他ファイルを消さない）。旧 WordPress の削除は
+#   Xserver のファイルマネージャで先に行うこと（docs/homepage-redesign.md §5-2）。
 name: Deploy corly.co.jp to Xserver
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - deploy/corly-site
 
 permissions:
   contents: read
@@ -24,6 +33,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check secrets are set
+        env:
+          H: ${{ secrets.XSERVER_FTP_HOST }}
+          U: ${{ secrets.XSERVER_FTP_USER }}
+          P: ${{ secrets.XSERVER_FTP_PASSWORD }}
+          D: ${{ secrets.XSERVER_FTP_DIR }}
+        run: |
+          missing=""
+          [ -z "$H" ] && missing="$missing XSERVER_FTP_HOST"
+          [ -z "$U" ] && missing="$missing XSERVER_FTP_USER"
+          [ -z "$P" ] && missing="$missing XSERVER_FTP_PASSWORD"
+          [ -z "$D" ] && missing="$missing XSERVER_FTP_DIR"
+          if [ -n "$missing" ]; then
+            echo "::error::GitHub Secrets が未設定です:$missing（Settings > Secrets and variables > Actions）"
+            exit 1
+          fi
+          case "$D" in */) ;; *) echo "::error::XSERVER_FTP_DIR は末尾スラッシュ必須です"; exit 1;; esac
 
       - name: Upload site/ via FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -38,3 +65,7 @@ jobs:
           exclude: |
             **/.git*
             **/.DS_Store
+
+      - name: Post-deploy security check (informational)
+        continue-on-error: true
+        run: bash scripts/check-site-security.sh https://corly.co.jp
