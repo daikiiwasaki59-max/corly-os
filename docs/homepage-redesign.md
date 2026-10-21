@@ -107,7 +107,7 @@ scripts/build-preview.mjs      全ページを1ファイルに束ねたプレビ
 | 7 | **SSH** を使わないなら OFF | SSH設定 | 要実施 |
 | 8 | **無料SSL** が有効か確認、「Web改ざん検知」があれば ON | SSL設定 | 要実施 |
 | 9 | **メール**: `info@corly.co.jp` の受信確認。`noreply@corly.co.jp` を作成。**DKIM署名 ON、DMARC を p=quarantine で設定**（なりすまし送信対策） | メールアカウント / DKIM設定 / DNS設定 | 要実施 |
-| 10 | **PHPバージョン** を最新の推奨版に | PHP Ver.切替 | 要実施 |
+| 10 | **PHPバージョン** を **8.4 系の最新（8.4.27 以上）** に。パネルに表示される番号が 8.4.27 未満なら §5-5 の設定を入れて Xserver 側の更新を待つ | PHP Ver.切替 | 要実施 |
 | 11 | 新サイトを `site/` から `public_html/` にアップロード（`.htaccess` `.well-known` を含む。隠しファイル表示ON） | ファイルマネージャ | 要実施 |
 | 12 | `public_html` の一つ上に `contact-ratelimit` ディレクトリを作成（権限 700） | ファイルマネージャ | 要実施 |
 | 13 | **Google Search Console**: プロパティ確認 → 「削除」で `quality/` `original/` のURLを申請 → `sitemap.xml` 送信 → 「セキュリティの問題」タブを確認 | Search Console | 要実施 |
@@ -140,7 +140,30 @@ scripts/build-preview.mjs      全ページを1ファイルに束ねたプレビ
 | メール（`info@`）のなりすまし | DKIM/DMARC（A-9）で受信側が弾ける |
 | Google Fonts への依存 | 外部読み込みはこれのみ。切りたければフォントを同梱に変更可 |
 
-## 6. デプロイ手順
+### 5-5. 2026-10-21 PHP 緊急セキュリティ勧告への対応
+
+出典: php.net News Archive 2026（2026-10-21 "Security advisory: Critical remote code execution vulnerabilities, update now"）。**実績値（原文を読んで要約）**。
+
+- 内容: 認証なしでリモートコード実行できる脆弱性2件（CVE-2026-109618: メモリ不足処理の不整合、CVE-2026-109619: リクエスト間で残る内部状態）。CVSS v4.0 9.2。
+- 修正版: **PHP 8.5.12 / 8.4.27 / 8.3.36 / 8.2.35**。8.1 以前は公式更新なし。8.2 は 2026-12-31 でサポート終了。
+- 危険度が最も高いのは Apache の mod_php。php-fpm / CGI でも対象。
+- 「完全な緩和策はなく、更新が唯一の安全策」と明記。
+
+**corly.co.jp への影響**: 新サイトで PHP が動くのは `contact.php` の1本のみ（他の .php は `.htaccess` で Apache 段階で拒否）。攻撃面は「contact.php への POST」に限られるが、ゼロではない。
+
+| 誰が | 作業 | 状態 |
+|---|---|---|
+| Xserver（事業者） | PHP 本体へのパッチ適用 | 利用者側では不可。パネルの番号で確認 |
+| あなた | 「PHP Ver.切替」で 8.4 系の最新を選ぶ。番号が **8.4.27 以上**か確認 | 要実施 |
+| あなた | 「php.ini設定」で次を設定: `session.upload_progress.enabled = Off` / `file_uploads = Off` / `post_max_size = 256K` / `upload_max_filesize = 256K` / `memory_limit = -1`（勧告の推奨。パネルで変更不可ならそのまま） | 要実施 |
+| リポジトリ（対応済み） | `.htaccess` に `LimitRequestBody 65536`（64KB超のPOSTは PHP に渡す前に拒否） | 済 |
+| リポジトリ（対応済み） | `site/.user.ini` に上記と同じ縮小設定（Web からは読めない） | 済 |
+| リポジトリ（対応済み） | `contact.php` が multipart を受け付けないよう変更（urlencoded のみ）、本文 64KB 上限を二重化 | 済 |
+| リポジトリ（対応済み） | 週次点検スクリプトに「multipart 拒否」「巨大POST 拒否」「.user.ini 非公開」の確認を追加 | 済 |
+
+注意: 勧告は「`session.upload_progress` の無効化は php.ini か FPM プール設定で行い、`.user.ini` や `ini_set()` に頼らないこと」としている。`.user.ini` は補助で、パネルの php.ini設定が本命。
+
+
 
 ### A. 手動（推奨・最初の1回）
 1. Xserver サーバーパネル → ファイルマネージャ → `corly.co.jp/public_html`。

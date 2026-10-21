@@ -39,6 +39,11 @@ c=$(code "$BASE/robots.txt"); [[ "$c" == "200" ]] && pass "robots.txt" || fail "
 c=$(code "$BASE/sitemap.xml"); [[ "$c" == "200" ]] && pass "sitemap.xml" || fail "sitemap.xml $c"
 c=$(code "$BASE/.well-known/security.txt"); [[ "$c" == "200" ]] && pass "security.txt" || fail "security.txt $c"
 c=$(code "$BASE/.htaccess"); [[ "$c" != "200" ]] && pass ".htaccess 非公開 ($c)" || fail ".htaccess が読める"
+c=$(code "$BASE/.user.ini"); [[ "$c" != "200" ]] && pass ".user.ini 非公開 ($c)" || fail ".user.ini が読める"
+
+echo "== 7. 入力制限（2026-10-21 PHP勧告の緩和策）"
+c=$(curl -s -o /dev/null -m 20 -w "%{http_code}" -X POST -H "Content-Type: multipart/form-data; boundary=x" --data-binary "--x--" "$BASE/contact.php"); [[ "$c" == "303" || "$c" == "302" || "$c" == "403" ]] && pass "multipart POST → $c（拒否）" || fail "multipart POST → $c"
+c=$(head -c 200000 /dev/zero | tr '\0' 'a' | curl -s -o /dev/null -m 30 -w "%{http_code}" -X POST -H "Content-Type: application/x-www-form-urlencoded" --data-binary @- "$BASE/contact.php"); [[ "$c" == "413" || "$c" == "303" || "$c" == "302" || "$c" == "403" ]] && pass "200KB POST → $c（拒否）" || fail "200KB POST → $c"
 
 echo; echo "結果: OK $ok / NG $ng"
 [[ $ng -eq 0 ]]

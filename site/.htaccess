@@ -13,6 +13,9 @@ DirectoryIndex index.html
   Require all denied
 </LimitExcept>
 
+# ---- リクエスト本文の上限（問い合わせフォームは数KBで足りる。巨大POSTはPHPに渡す前に拒否）----
+LimitRequestBody 65536
+
 # ---- HTTPS強制・www なしに統一 ----
 RewriteEngine On
 RewriteCond %{HTTPS} !=on

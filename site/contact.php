@@ -41,9 +41,14 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     exit;
 }
 
-// 0. フォーム以外のContent-Type（JSON等）は受け付けない
+// 0. フォーム以外のContent-Type（JSON・multipart等）は受け付けない。
+//    フォームはファイル送信をしないので、urlencoded のみ（multipart パーサに触れさせない）
 $ctype = strtolower((string) ($_SERVER['CONTENT_TYPE'] ?? ''));
-if (strpos($ctype, 'application/x-www-form-urlencoded') !== 0 && strpos($ctype, 'multipart/form-data') !== 0) {
+if (strpos($ctype, 'application/x-www-form-urlencoded') !== 0) {
+    bounce('spam');
+}
+// 0-1. 本文サイズの上限（.htaccess の LimitRequestBody と二重に持つ）
+if ((int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 65536) {
     bounce('spam');
 }
 // 0-2. ブラウザからの通常送信であることの追加確認（対応ブラウザのみ送るヘッダ）
